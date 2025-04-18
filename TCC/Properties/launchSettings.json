@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "TCC": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\arthu\\source\\repos\\rterrabh\\arqsw_20242_grupo8\\TP5\\src\\SimpleAPI\\SimpleAPI.sln"
+    }
+  }
+}
