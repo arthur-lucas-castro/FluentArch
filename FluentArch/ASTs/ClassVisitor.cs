@@ -28,10 +28,10 @@ namespace FluentArch.ASTs
                 {
                     var classeAnalisada = new ClassEntityDto();
                     classeAnalisada.Nome = classDeclaration.Identifier.Text;
-                    var symbol = semanticModel.GetSymbolInfo(classDeclaration).Symbol;
+                    var symbol = semanticModel.GetDeclaredSymbol(classDeclaration);
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
                     {
-                        classeAnalisada.Namespace = symbol.ContainingNamespace.Name;
+                        classeAnalisada.Namespace = symbol.ContainingNamespace.ToString();
                     }
                     PreencherBase(classDeclaration, classeAnalisada, semanticModel);
                     PreencherAtributosDaClasse(classDeclaration, classeAnalisada, semanticModel);

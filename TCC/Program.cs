@@ -1,4 +1,6 @@
-﻿using FluentArch.ASTs;
+﻿using FluentArch.Arch;
+using FluentArch.Arch.Layer;
+using FluentArch.ASTs;
 using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.MSBuild;
@@ -31,7 +33,15 @@ namespace TCC
 
                 var classVisitor = new ClassVisitor();
 
-               await classVisitor.ObterDadosDasClasses(servicos);
+                var arch = Architecture.Build(solution);
+                
+                var controllerLayer = arch.Classes().That().ResideInNamespace("SimpleAPI.Controllers.*");
+                var repositoryLayer = arch.Classes().That().ResideInNamespace("Repositorios");
+                var servicoLayer = arch.Classes().That().ResideInNamespace("Servicos");
+
+                var teste = controllerLayer.Should().OnlyCanCreate(repositoryLayer);
+                var teste2 = controllerLayer.Should().OnlyCanCreate("Repositorios");
+                classVisitor.ObterDadosDasClasses(servicos);
 
             }
         }
