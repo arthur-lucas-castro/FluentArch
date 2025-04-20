@@ -23,7 +23,7 @@ namespace FluentArch.Rules
             var violations = criacoesPorClasse
                 .Select(classe => new ViolationDto
                 {
-                    NameClasse = classe.ClassName,
+                    ClassName = classe.ClassName,
                     Violations = classe.Criacoes.Where(c => c.CompareClassAndNamespace(todasEntityDto)).ToList()
                 })
                 .Where(classe => classe.Violations.Any());
@@ -47,7 +47,7 @@ namespace FluentArch.Rules
             var violations = criacoesPorClasse
                .Select(classe => new ViolationDto
                {
-                   NameClasse = classe.ClassName,
+                   ClassName = classe.ClassName,
                    Violations = classe.Criacoes.Where(c => !c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
                })
                .Where(classe => classe.Violations.Any());

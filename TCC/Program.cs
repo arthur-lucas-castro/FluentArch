@@ -39,7 +39,7 @@ namespace TCC
                 var repositoryLayer = arch.Classes().That().ResideInNamespace("Repositorios").DefineAsLayer();
                 var servicoLayer = arch.Classes().That().ResideInNamespace("Servicos").DefineAsLayer();
 
-                var teste = controllerLayer.Should().OnlyCanCreate(repositoryLayer);
+                var teste = controllerLayer.Should().MustCreate(repositoryLayer);
                 var teste2 = controllerLayer.Should().OnlyCanCreate("Repositorios");
                 classVisitor.ObterDadosDasClasses(servicos);
 
