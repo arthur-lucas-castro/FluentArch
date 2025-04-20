@@ -1,11 +1,6 @@
-﻿using FluentArch.Arch;
-using FluentArch.Arch.Layer;
-using FluentArch.DTO;
-using FluentArch.Rules;
+﻿using FluentArch.DTO;
 using FluentArch.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 
 namespace FluentArch.Filters
 {
@@ -17,11 +12,36 @@ namespace FluentArch.Filters
             _classes = classes;
         }
 
-        public Layer ResideInNamespace(string namespacePath)
+        public IntermediaryFilter ResideInNamespace(string namespacePath)
         {
-            //TODO: Criar regra de *
             var classesFiltradas = _classes.Where(classe => classe.Namespace.NamespaceCompare(namespacePath));
-            return new Layer(classesFiltradas, "");
+            return new IntermediaryFilter(classesFiltradas);
+        }
+
+        public IntermediaryFilter HaveNameStartingWith(string startingName)
+        {
+            var classesFiltradas = _classes.Where(classe => classe.Nome.StartsWith(startingName));
+            return new IntermediaryFilter(classesFiltradas);
+        }
+        public IntermediaryFilter HaveNameStartingWith(string startingName, StringComparison stringComparison)
+        {
+            var classesFiltradas = _classes.Where(classe => classe.Nome.StartsWith(startingName, stringComparison));
+            return new IntermediaryFilter(classesFiltradas);
+        }
+        public IntermediaryFilter HaveNameEndingWith(string endingName)
+        {
+            var classesFiltradas = _classes.Where(classe => classe.Nome.EndsWith(endingName));
+            return new IntermediaryFilter(classesFiltradas);
+        }
+        public IntermediaryFilter HaveNameMatchingWith(string pattern, RegexOptions regexOptions)
+        {
+            var classesFiltradas = _classes.Where(classe => Regex.IsMatch(classe.Nome, pattern, regexOptions));
+            return new IntermediaryFilter(classesFiltradas);
+        }
+        public IntermediaryFilter HaveNameMatchingWith(string pattern)
+        {
+            var classesFiltradas = _classes.Where(classe => Regex.IsMatch(classe.Nome, pattern));
+            return new IntermediaryFilter(classesFiltradas);
         }
     }
 }

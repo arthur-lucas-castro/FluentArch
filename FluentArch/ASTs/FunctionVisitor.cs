@@ -19,6 +19,7 @@ namespace FluentArch.ASTs
         public static FunctionEntityDto VisitarFuncao(MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
             var functionDto = new FunctionEntityDto();
+            functionDto.IsConstructor = false;
             var symbol = semanticModel.GetDeclaredSymbol(method);
             if (symbol is IMethodSymbol namedTypeSymbol)
             {
@@ -28,17 +29,14 @@ namespace FluentArch.ASTs
             }
             var body = method.Body;
             var parametros = method.ParameterList.Parameters.Where(p => !VisitorUtils.EhTipoPrimitivo(p.Type!.ToString()));
-            var retorno = method.ReturnType;
+
             var acessibilidade = method.Modifiers;
             functionDto.Parametros.AddRange(PreencherParametros(semanticModel, parametros));
-            functionDto.Declaracoes.AddRange(PreencherDeclaracoes(method, semanticModel));
+            functionDto.TiposLocais.AddRange(PreencherTiposLocais(method, semanticModel));
             functionDto.Acessos.AddRange(PreencherAcessos(method, semanticModel));
             functionDto.Criacoes.AddRange(PreencherCriacoes(method, semanticModel));
             functionDto.Lancamentos.AddRange(PreencherLancamentos(method, semanticModel));
-            var retornoEntity = new EntityDto
-            {
-                Local = FormatarStringUtils.FormatarLocalizacaoLinha(retorno.GetLocation())
-            };
+            //EntityDto retornoEntity = PreencherRetornos(method, semanticModel, symbol);
 
             functionDto.NivelAcesso = method.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
                               mod.IsKind(SyntaxKind.PrivateKeyword) ||
@@ -49,7 +47,57 @@ namespace FluentArch.ASTs
             return functionDto;
         }
 
-        private static List<EntityDto> PreencherLancamentos(MethodDeclarationSyntax method, SemanticModel semanticModel)
+        //TODO: Fazer caso do retorno, considerar dictionarys e mais de um retonor (typoe1, type2)
+        private static List<EntityDto> PreencherRetornos(MethodDeclarationSyntax method, SemanticModel semanticModel)
+        {
+            var retorno = method.ReturnType;
+            var symbol = semanticModel.GetDeclaredSymbol(retorno);
+            var listaRetornos = new List<EntityDto>();
+            if (symbol is IParameterSymbol parameterSymbol)
+            {
+                listaRetornos.Add(new EntityDto
+                {
+                    Nome = parameterSymbol.Name,
+                    Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
+                    Local = FormatarStringUtils.FormatarLocalizacaoLinha(retorno.GetLocation())
+                });
+            }
+
+            return listaRetornos;
+        }
+
+        public static FunctionEntityDto VisitarConstrutor(ConstructorDeclarationSyntax construtor, SemanticModel semanticModel)
+        {
+            var functionDto = new FunctionEntityDto();
+            functionDto.IsConstructor = true;
+
+            var symbol = semanticModel.GetDeclaredSymbol(construtor);
+            if (symbol is IMethodSymbol namedTypeSymbol)
+            {
+                functionDto.Namespace = namedTypeSymbol.ContainingNamespace.ToString();
+                functionDto.Local = FormatarStringUtils.FormatarLocalizacaoLinha(construtor.GetLocation());
+            }
+            var body = construtor.Body;
+            var parametros = construtor.ParameterList.Parameters.Where(p => !VisitorUtils.EhTipoPrimitivo(p.Type!.ToString()));
+
+            var acessibilidade = construtor.Modifiers;
+            functionDto.Parametros.AddRange(PreencherParametros(semanticModel, parametros));
+            functionDto.TiposLocais.AddRange(PreencherTiposLocais(construtor, semanticModel));
+            functionDto.Acessos.AddRange(PreencherAcessos(construtor, semanticModel));
+            functionDto.Criacoes.AddRange(PreencherCriacoes(construtor, semanticModel));
+            functionDto.Lancamentos.AddRange(PreencherLancamentos(construtor, semanticModel));
+            functionDto.Bloco = construtor.Body;
+
+            functionDto.NivelAcesso = construtor.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
+                              mod.IsKind(SyntaxKind.PrivateKeyword) ||
+                              mod.IsKind(SyntaxKind.ProtectedKeyword) ||
+                              mod.IsKind(SyntaxKind.InternalKeyword))
+                .Select(mod => mod.Text)
+                .FirstOrDefault();
+            return functionDto;
+        }
+
+        private static List<EntityDto> PreencherLancamentos(SyntaxNode method, SemanticModel semanticModel)
         {
             var throwStatements = method.DescendantNodes()
              .OfType<ThrowStatementSyntax>();
@@ -75,7 +123,7 @@ namespace FluentArch.ASTs
             return listaExcecao;
         }
 
-        private static List<EntityDto> PreencherCriacoes(MethodDeclarationSyntax method, SemanticModel semanticModel)
+        private static List<EntityDto> PreencherCriacoes(SyntaxNode method, SemanticModel semanticModel)
         {
             var objectCreationDeclarations = method.DescendantNodes()
                          .OfType<ObjectCreationExpressionSyntax>();
@@ -102,7 +150,7 @@ namespace FluentArch.ASTs
             return listaCriacoes;
         }
 
-        private static List<EntityDto> PreencherAcessos(MethodDeclarationSyntax method, SemanticModel semanticModel)
+        private static List<EntityDto> PreencherAcessos(SyntaxNode method, SemanticModel semanticModel)
         {
             var memberAcessDeclarations = method.DescendantNodes()
               .OfType<MemberAccessExpressionSyntax>();
@@ -129,7 +177,7 @@ namespace FluentArch.ASTs
             return listaAcessos;
         }
 
-        private static List<EntityDto> PreencherDeclaracoes(MethodDeclarationSyntax method, SemanticModel semanticModel)
+        private static List<EntityDto> PreencherTiposLocais(SyntaxNode method, SemanticModel semanticModel)
         {
             var variableDeclarations = method.DescendantNodes()
                .OfType<VariableDeclaratorSyntax>()

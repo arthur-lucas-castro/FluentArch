@@ -24,11 +24,11 @@ namespace FluentArch.Arch.Layer
 
         public Rules.Rules Should()
         {
-            return new Rules.Rules(_classes, isNegative: false);
+            return new Rules.Rules(_classes);
         }
         public Rules.Rules ShouldNot()
         {
-            return new Rules.Rules(_classes, isNegative: true);
+            return new Rules.Rules(_classes);
         }
 
     }

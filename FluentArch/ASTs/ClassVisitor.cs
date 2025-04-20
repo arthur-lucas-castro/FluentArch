@@ -139,6 +139,12 @@ namespace FluentArch.ASTs
             {
                 dadosDaClasse.Funcoes.Add(FunctionVisitor.VisitarFuncao(method, semanticModel));
             }
+            var constructors = classDeclaration.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
+            foreach (var constructor in constructors)
+            {
+                dadosDaClasse.Funcoes.Add(FunctionVisitor.VisitarConstrutor(constructor, semanticModel));
+            }
+
         }
 
        

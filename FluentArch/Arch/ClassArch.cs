@@ -8,9 +8,9 @@ namespace FluentArch.Arch
 {
     public class ClassArch
     {
-        private readonly List<ClassEntityDto> _classes;
+        private readonly IEnumerable<ClassEntityDto> _classes;
 
-        public ClassArch(List<ClassEntityDto> classes)
+        public ClassArch(IEnumerable<ClassEntityDto> classes)
         {
             _classes = classes;
         }

@@ -28,6 +28,15 @@ namespace FluentArch.Arch
             }
             return _instance;
         }
+        public static Architecture GetInstance()
+        {
+            if(_instance == null)
+            {
+                throw new InvalidOperationException("");
+            }
+            return _instance;
+        }
+
         public static IEnumerable<ClassEntityDto> GetClasses()
         {
             if (_instance == null)

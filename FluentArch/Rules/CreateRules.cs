@@ -1,63 +1,90 @@
 ﻿using FluentArch.Arch.Layer;
 using FluentArch.DTO;
 using FluentArch.DTO.Rules;
+using FluentArch.Result;
 using FluentArch.Utils;
+using Mapster;
 
 namespace FluentArch.Rules
 {
     public class CreateRules
     {
-        public bool Create(string namespacePath, IEnumerable<ClassEntityDto> classes)
-        {
-            var todasCriacoes = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Criacoes));
-            var resultado = todasCriacoes.Any(criacao => criacao.Namespace.NamespaceCompare(namespacePath));
-            return resultado;
-        }
-
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public bool Create(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public PreResult CannotCreate(Layer layer, IEnumerable<ClassEntityDto> classes)
         {
-            //TODO: Criar mapper
-            var todasEntityDto = layer._classes.Select(x => new EntityDto { Nome = x.Nome, Namespace = x.Namespace, Local = x.Local });
-            var todasCriacoes = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Criacoes));
-            var resultado = todasCriacoes.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto.ToList()));
-            return resultado;
-        }
-        public bool OnlyCreate(string namespacePath, IEnumerable<ClassEntityDto> classes)
-        {
-            var todasCriacoes = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Criacoes));
-            var resultado = todasCriacoes.All(criacao => criacao.Namespace.NamespaceCompare(namespacePath));
-            return resultado;
-        }
-        public bool OnlyCreate(Layer layer, IEnumerable<ClassEntityDto> classes)
-        {
-            //TODO: Criar mapper
-            var todasEntityDto = layer._classes.Select(x => new EntityDto { Nome = x.Nome, Namespace = x.Namespace, Local = x.Local });
-            var todasCriacoes = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Criacoes));
-            var resultado = todasCriacoes.All(criacao => criacao.CompareClassAndNamespace(todasEntityDto.ToList()));
-            return resultado;
-        }
+            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
 
-        //TODO: Validar 
-        public bool MustCreate(string namespacePath, IEnumerable<ClassEntityDto> classes)
-        {
-            var resultado = classes.All(classe => classe.Funcoes.SelectMany(funcao => funcao.Criacoes).Any(criacao => criacao.Namespace.NamespaceCompare(namespacePath)));
-            return resultado;
-        }
-        //TODO: Validar
-        public bool MustCreate(Layer layer, IEnumerable<ClassEntityDto> classes)
-        {
-            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasse
+            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
             {
-                Nome = classe.Nome,
+                ClassName = classe.Nome,
                 Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
             });
-            //TODO: Criar mapper
-            var todasEntityDto = layer._classes.Select(x => new EntityDto { Nome = x.Nome, Namespace = x.Namespace, Local = x.Local });
 
-            criacoesPorClasse.All(classe => classe.Criacoes.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto)));
-            var resultado = criacoesPorClasse.All(classe => classe.Criacoes.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto)));
-            return resultado;
+            var violations = criacoesPorClasse
+                .Select(classe => new ViolationDto
+                {
+                    NameClasse = classe.ClassName,
+                    Violations = classe.Criacoes.Where(c => c.CompareClassAndNamespace(todasEntityDto)).ToList()
+                })
+                .Where(classe => classe.Violations.Any());
+
+            if(violations.Any()) 
+            {
+                return new PreResult(isSuccessful: false, violations);
+            }
+            return new PreResult(isSuccessful: true);
+        }
+        public PreResult CreateOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        {
+            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
+
+            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
+            {
+                ClassName = classe.Nome,
+                Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
+            });
+
+            var violations = criacoesPorClasse
+               .Select(classe => new ViolationDto
+               {
+                   NameClasse = classe.ClassName,
+                   Violations = classe.Criacoes.Where(c => !c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
+               })
+               .Where(classe => classe.Violations.Any());
+
+            if(violations.Any())
+            {
+                return new PreResult(isSuccessful: false, violations);
+            }
+            return new PreResult(isSuccessful: true);
+        }
+
+        //TODO: Validar
+        public PreResult MustCreate(IEnumerable<ClassEntityDto> classes, Layer layer)
+        {
+            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
+            {
+                ClassName = classe.Nome,
+                Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
+            });
+
+            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
+
+            var classesWithoutRequiredCreation = criacoesPorClasse
+              .Select(classe => new CriacoesPorClasseDto
+              {
+                  ClassName = classe.ClassName,
+                  Criacoes = classe.Criacoes.Where(c => c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
+              })
+              .Where(classe => !classe.Criacoes.Any());
+
+            if (classesWithoutRequiredCreation.Any())
+            {
+                var violations = classesWithoutRequiredCreation.Select(classe => classe.Adapt<ViolationDto>());
+                return new PreResult(isSuccessful: false, violations);
+            }
+            return new PreResult(isSuccessful: true);
+
         }
     }
 }
