@@ -35,12 +35,14 @@ namespace TCC
 
                 var arch = Architecture.Build(solution);
                 
-                var controllerLayer = arch.Classes().That().ResideInNamespace("SimpleAPI.Controllers.*").DefineAsLayer();
+                var controllerLayer = arch.Classes().That().ResideInNamespace("SimpleAPI.Controllers.*").And().HaveNameEndingWith("Controller").DefineAsLayer();
                 var repositoryLayer = arch.Classes().That().ResideInNamespace("Repositorios").DefineAsLayer();
                 var servicoLayer = arch.Classes().That().ResideInNamespace("Servicos").DefineAsLayer();
 
-                var teste = controllerLayer.Should().MustCreate(repositoryLayer);
+                var entityLayer = arch.Classes().That().ResideInNamespace("Entidade").DefineAsLayer();
+
                 var teste2 = controllerLayer.Should().OnlyCanCreate("Repositorios");
+
                 classVisitor.ObterDadosDasClasses(servicos);
 
             }

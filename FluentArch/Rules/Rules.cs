@@ -3,12 +3,8 @@ using FluentArch.Arch.Layer;
 using FluentArch.DTO;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
-using FluentArch.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Text;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
+
 
 namespace FluentArch.Rules
 {
@@ -116,53 +112,69 @@ namespace FluentArch.Rules
         #endregion
 
         #region Access
-        public bool CannotAccess(Layer layer)
+        public IntermediaryRule CannotAccess(Layer layer)
         {
-            return !_accessRules.Access(layer, _classes);
+            var result = _accessRules.CannotAccess(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
-        public bool CannotAccess(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return !_accessRules.Access(layer, _classes);
-        }
-        public bool CanAccessOnly(string namespacePath)
+        public IntermediaryRule CannotAccess(string namespacePath)
         {
             var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
 
-            return _accessRules.AccessOnly(layer, _classes);
+            var result = _accessRules.CannotAccess(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
-        public bool CanAccessOnly(Layer layer)
+        public IntermediaryRule CanAccessOnly(string namespacePath)
         {
-            return _accessRules.AccessOnly(layer, _classes);
+            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
+
+            var result = _accessRules.AccessOnly(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
+        }
+        public IntermediaryRule CanAccessOnly(Layer layer)
+        {
+            var result = _accessRules.AccessOnly(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
 
-        public bool OnlyCanAccess(string namespacePath)
+        public IntermediaryRule OnlyCanAccess(string namespacePath)
         {
             var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
 
             var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
 
-            return !_accessRules.Access(layer, todasClassesExcetoModuloAtual);
+            var result = _accessRules.CannotAccess(layer, todasClassesExcetoModuloAtual);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
 
-        public bool OnlyCanAccess(Layer layer)
+        public IntermediaryRule OnlyCanAccess(Layer layer)
         {
             var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
 
-            return !_accessRules.Access(layer, todasClassesExcetoModuloAtual);
+            var result = _accessRules.CannotAccess(layer, todasClassesExcetoModuloAtual);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
 
         //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public bool MustAccess(string namespacePath)
+        public IntermediaryRule MustAccess(string namespacePath)
         {
             var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
 
-            return _accessRules.MustAccess(layer, _classes);
+            var result = _accessRules.MustAccess(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
-        public bool MustAccess(Layer layer)
+        public IntermediaryRule MustAccess(Layer layer)
         {
-            return _accessRules.MustAccess(layer, _classes);
+            var result = _accessRules.MustAccess(layer, _classes);
+            _preResults.Add(result);
+            return new IntermediaryRule(_classes, _preResults);
         }
         #endregion
 
@@ -370,9 +382,9 @@ namespace FluentArch.Rules
         #endregion
 
         #region Custom Rule
-        public bool UseCustomRule(ICustomRule customRule)
+        public void UseCustomRule()
         {
-            return customRule.DefineCustomRule();
+            // return customRule.DefineCustomRule(_classes);
         }
         #endregion
     }

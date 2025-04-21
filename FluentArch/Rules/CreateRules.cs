@@ -34,6 +34,7 @@ namespace FluentArch.Rules
             }
             return new PreResult(isSuccessful: true);
         }
+
         public PreResult CreateOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
         {
             var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());

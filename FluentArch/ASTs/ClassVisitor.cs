@@ -1,10 +1,7 @@
-﻿
-
-using FluentArch.DTO;
+﻿using FluentArch.DTO;
 using FluentArch.Utils;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using System.Security.AccessControl;
 
 namespace FluentArch.ASTs
 {

@@ -216,7 +216,7 @@ namespace FluentArch.ASTs
                 {
                     listaEntidades.Add(new EntityDto
                     {
-                        Nome = parameterSymbol.Name,
+                        Nome = parameterSymbol.Type.Name,
                         Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
                         Local = FormatarStringUtils.FormatarLocalizacaoLinha(parametro.GetLocation())
                     });

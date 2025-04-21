@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TCC", "TCC\TCC.csproj", "{5
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentArch", "FluentArch\FluentArch.csproj", "{C9B162A8-4F10-42BD-BC1A-385E008E469E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{B5B22CA4-5E90-4A8D-A5A0-D66719E27D59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C9B162A8-4F10-42BD-BC1A-385E008E469E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9B162A8-4F10-42BD-BC1A-385E008E469E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9B162A8-4F10-42BD-BC1A-385E008E469E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5B22CA4-5E90-4A8D-A5A0-D66719E27D59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5B22CA4-5E90-4A8D-A5A0-D66719E27D59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5B22CA4-5E90-4A8D-A5A0-D66719E27D59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5B22CA4-5E90-4A8D-A5A0-D66719E27D59}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
