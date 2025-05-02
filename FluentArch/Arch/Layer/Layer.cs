@@ -1,35 +1,55 @@
 ﻿using FluentArch.DTO;
-using FluentArch.Filters;
+using FluentArch.Result;
 using FluentArch.Rules;
+using FluentArch.Rules.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace FluentArch.Arch.Layer
 {
-    public class Layer
+    public class Layer : ILayer
     {
-        public readonly IEnumerable<ClassEntityDto> _classes;
-        private string _name;
+        public readonly IEnumerable<TypeEntityDto> _classes;
+        private ICompleteRule _builder;
+        private IRules _rules;
 
-        public Layer(IEnumerable<ClassEntityDto> classes, string name)
+        public Layer(IEnumerable<TypeEntityDto> classes, ICompleteRule builder)
         {
             _classes = classes;
-            _name = name;
-        }
-        public Filter That()
-        {
-            return new Filter(_classes);
+            _builder = builder;
+            _rules = new Rules.Rules(builder);
         }
 
-        public Rules.Rules Should()
+        public List<TypeEntityDto> GetTypes()
         {
-            return new Rules.Rules(_classes);
-        }
-        public Rules.Rules ShouldNot()
-        {
-            return new Rules.Rules(_classes);
+            return _builder.GetTypes();
         }
 
+        public IFilters And()
+        {
+            return new RuleFilter(_builder);
+        }
+
+        public IMustRules Must()
+        {
+
+            return _rules.Must();
+        }
+
+        public ICanOnlyRules CanOnly()
+        {
+            return _rules.CanOnly();
+        }
+
+        public ICannotRules Cannot()
+        {
+            return _rules.Cannot();
+        }
+
+        public IOnlyCanRules OnlyCan()
+        {
+            return _rules.OnlyCan();
+        }
     }
 }

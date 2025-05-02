@@ -1,6 +1,7 @@
 ﻿using FluentArch.Arch.Layer;
 using FluentArch.DTO;
 using FluentArch.DTO.Rules;
+using FluentArch.Result;
 using FluentArch.Utils;
 using Mapster;
 using System;
@@ -13,45 +14,76 @@ namespace FluentArch.Rules
     {
 
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public bool Declare(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotDeclare(List<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasDeclaracoes = ObterTodasDeclaracoes(classes);
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                var todasDeclaracoes = ObterTodasDeclaracoes(type);
 
-            var resultado = todasDeclaracoes.Any(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
-            return resultado;
+                var declaracoes = todasDeclaracoes.Where(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
+                if (!declaracoes.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = declaracoes.ToList() });
+            }          
+
+            return violacoes;
         }
 
-        public bool DeclareOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> DeclareOnly(List<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
-            var todasDeclaracoes = ObterTodasDeclaracoes(classes);
-            var resultado = todasDeclaracoes.All(acesso => acesso.CompareClassAndNamespace(todasEntityDto.ToList()));
-            return resultado;
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                var todasDeclaracoes = ObterTodasDeclaracoes(type);
+
+                var declaracoesQueQuebramRegra = todasDeclaracoes.Where(declaracao => !declaracao.CompareClassAndNamespace(todasEntityDto));
+                if (!declaracoesQueQuebramRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = declaracoesQueQuebramRegra.ToList() });
+            }
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public bool MustDeclare(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> MustDeclare(List<TypeEntityDto> types, ILayer layer)
         {
-            var acessosPorClasse = classes.Select(classe => new DeclaracoesPorClasseDto
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                Nome = classe.Nome,
-                Declaracoes = ObterTodasDeclaracoes(new List<ClassEntityDto> { classe }),
-            });
+                var todasDeclaracoes = ObterTodasDeclaracoes(type);
 
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
-            var resultado = acessosPorClasse.All(classe => classe.Declaracoes.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto)));
+                var typeDeclaraTarget = todasDeclaracoes.Any(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
+                if (typeDeclaraTarget)
+                {
+                    continue;
+                }
 
-            return resultado;
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
+            }
+
+            return violacoes;
         }
 
-        private static List<EntityDto> ObterTodasDeclaracoes(IEnumerable<ClassEntityDto> classes)
+        private static List<EntityDto> ObterTodasDeclaracoes(TypeEntityDto type)
         {
             var todasDeclaracoes = new List<EntityDto>();
-            todasDeclaracoes.AddRange(classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Parametros)));
-            todasDeclaracoes.AddRange(classes.SelectMany(classe => classe.Propriedades));
-            todasDeclaracoes.AddRange(classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.TiposLocais)));
+            todasDeclaracoes.AddRange(type.Funcoes.SelectMany(funcao => funcao.Parametros));
+            todasDeclaracoes.AddRange(type.Propriedades);
+            todasDeclaracoes.AddRange(type.Funcoes.SelectMany(funcao => funcao.TiposLocais));
 
             return todasDeclaracoes;
         }

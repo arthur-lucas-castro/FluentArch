@@ -1,5 +1,7 @@
 ﻿using FluentArch.ASTs;
 using FluentArch.DTO;
+using FluentArch.Rules;
+using FluentArch.Rules.Interfaces;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -9,8 +11,8 @@ namespace FluentArch.Arch
 {
     public class Architecture
     {
-        private static Architecture _instance;
-        private List<ClassEntityDto> _classes = new();
+        private static Architecture? _instance;
+        private List<TypeEntityDto> _classes = new();
         private Architecture(Solution solution) 
         {
             var classVisitor = new ClassVisitor();
@@ -26,49 +28,50 @@ namespace FluentArch.Arch
             {
                 _instance = new Architecture(solution);
             }
-            return _instance;
+            return new Architecture(solution);
         }
+        
+        public static IEnumerable<TypeEntityDto> GetClasses()
+        {
+            if (_instance == null)
+            {
+                return new List<TypeEntityDto>();
+            }
+            return _instance._classes;
+        }
+
+        public RuleFilter Classes()
+        {
+            var builder = new RuleBuilder();
+            builder.UpdateTypes(_classes);
+
+            return new RuleFilter(builder);
+        }
+
         public static Architecture GetInstance()
         {
-            if(_instance == null)
+            if (_instance == null)
             {
                 throw new InvalidOperationException("");
             }
             return _instance;
         }
 
-        public static IEnumerable<ClassEntityDto> GetClasses()
+        public RuleFilter AreClasses()
         {
-            if (_instance == null)
-            {
-                return new List<ClassEntityDto>();
-            }
-            return _instance._classes;
-        }
-        public void DefineAsLayer()
-        {
+            var builder = new RuleBuilder();
+            builder.UpdateTypes(_classes);
 
+            return new RuleFilter(builder);
         }
 
-        public void ResideInNamespace(string namespacePath)
+        public IFilters All()
         {
+            var builder = new RuleBuilder();
+            builder.UpdateTypes(_classes);
 
-        }
-
-        public ClassArch Classes()
-        {
-            return new ClassArch(_classes);
-        }
-
-
-    }
-
-    public class Predicados
-    {
-        private List<ClassEntityDto> _classes;
-        public Predicados(List<ClassEntityDto> classes)
-        {
-            _classes = classes;
+            return new RuleFilter(builder);
         }
     }
+
 }

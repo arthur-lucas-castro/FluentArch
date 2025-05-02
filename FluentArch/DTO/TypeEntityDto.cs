@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FluentArch.DTO
 {
-    public class ClassEntityDto : EntityDto
+    public class TypeEntityDto : EntityDto
     {
         public List<FunctionEntityDto> Funcoes { get; set; } = new List<FunctionEntityDto>();
         public List<EntityDto> Propriedades { get; set; } = new List<EntityDto>();

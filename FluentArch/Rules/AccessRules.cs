@@ -13,88 +13,68 @@ namespace FluentArch.Rules
     public class AccessRules
     {
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public PreResult CannotAccess(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotAccess(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var acessosPorClasse = classes.Select(classe => new AcessosPorClasseDto
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Access = classe.Funcoes.SelectMany(funcao => funcao.Acessos).ToList(),
-            });
+                var todosAcessos = type.Funcoes.SelectMany(f => f.Acessos);
 
-            var violations = acessosPorClasse
-                .Select(classe => new ViolationDto
+                var acessosQueViolamRegra = todosAcessos.Where(criacao => criacao.CompareClassAndNamespace(todasEntityDto));
+                if (!acessosQueViolamRegra.Any())
                 {
-                    ClassName = classe.ClassName,
-                    Violations = classe.Access.Where(c => c.CompareClassAndNamespace(todasEntityDto)).ToList()
-                })
-                .Where(classe => classe.Violations.Any());
+                    continue;
+                }
 
-            if (violations.Any())
-            {
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = acessosQueViolamRegra.ToList() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
         }
 
-        public PreResult AccessOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> AccessOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
-            var todosAcessos = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Acessos));
-            var resultado = todosAcessos.All(acesso => acesso.CompareClassAndNamespace(todasEntityDto.ToList()));
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
-
-            var acessosPorClasse = classes.Select(classe => new AcessosPorClasseDto
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Access = classe.Funcoes.SelectMany(funcao => funcao.Acessos).ToList(),
-            });
+                var todosAcessos = type.Funcoes.SelectMany(f => f.Acessos);
 
-            //TODO: Pensar em um metodo mais generico;
-            var violations = acessosPorClasse
-               .Select(classe => new ViolationDto
-               {
-                   ClassName = classe.ClassName,
-                   Violations = classe.Access.Where(c => !c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
-               })
-               .Where(classe => classe.Violations.Any());
+                var acessosQueViolamRegra = todosAcessos.Where(criacao => !criacao.CompareClassAndNamespace(todasEntityDto));
+                if (!acessosQueViolamRegra.Any())
+                {
+                    continue;
+                }
 
-            if (violations.Any())
-            {
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = acessosQueViolamRegra.ToList() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public PreResult MustAccess(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> MustAccess(IEnumerable<TypeEntityDto> types, ILayer layer)
         {  
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var acessosPorClasse = classes.Select(classe => new AcessosPorClasseDto
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Access = classe.Funcoes.SelectMany(funcao => funcao.Acessos).ToList(),
-            });
+                var todosAcessos = type.Funcoes.SelectMany(f => f.Criacoes);
 
-            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
+                var typeAcessaTarget = todosAcessos.Any(acessos => acessos.CompareClassAndNamespace(todasEntityDto));
+                if (typeAcessaTarget)
+                {
+                    continue;
+                }
 
-            var classesWithoutRequiredCreation = acessosPorClasse
-              .Select(classe => new AcessosPorClasseDto
-              {
-                  ClassName = classe.ClassName,
-                  Access = classe.Access.Where(c => c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
-              })
-              .Where(classe => !classe.Access.Any());
-
-            if (classesWithoutRequiredCreation.Any())
-            {
-                var violations = classesWithoutRequiredCreation.Select(classe => classe.Adapt<ViolationDto>());
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
         }
     }
 }

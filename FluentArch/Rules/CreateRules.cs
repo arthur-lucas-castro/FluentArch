@@ -10,81 +10,68 @@ namespace FluentArch.Rules
     public class CreateRules
     {
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public PreResult CannotCreate(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotCreate(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
-            });
+                var todasCriacoes = type.Funcoes.SelectMany(f => f.Criacoes);
 
-            var violations = criacoesPorClasse
-                .Select(classe => new ViolationDto
+                var criacoesQueViolamRegra = todasCriacoes.Where(criacao => criacao.CompareClassAndNamespace(todasEntityDto));
+                if (!criacoesQueViolamRegra.Any())
                 {
-                    ClassName = classe.ClassName,
-                    Violations = classe.Criacoes.Where(c => c.CompareClassAndNamespace(todasEntityDto)).ToList()
-                })
-                .Where(classe => classe.Violations.Any());
+                    continue;
+                }
 
-            if(violations.Any()) 
-            {
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = criacoesQueViolamRegra.ToList() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
         }
 
-        public PreResult CreateOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CreateOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
-            });
+                var todasCriacoes = type.Funcoes.SelectMany(f => f.Criacoes);
 
-            var violations = criacoesPorClasse
-               .Select(classe => new ViolationDto
-               {
-                   ClassName = classe.ClassName,
-                   Violations = classe.Criacoes.Where(c => !c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
-               })
-               .Where(classe => classe.Violations.Any());
+                var criacoesQueViolamRegra = todasCriacoes.Where(criacao => !criacao.CompareClassAndNamespace(todasEntityDto));
+                if (!criacoesQueViolamRegra.Any())
+                {
+                    continue;
+                }
 
-            if(violations.Any())
-            {
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = criacoesQueViolamRegra.ToList() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public PreResult MustCreate(IEnumerable<ClassEntityDto> classes, Layer layer)
+        public List<ViolationDto> MustCreate(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var criacoesPorClasse = classes.Select(classe => new CriacoesPorClasseDto
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
             {
-                ClassName = classe.Nome,
-                Criacoes = classe.Funcoes.SelectMany(funcao => funcao.Criacoes).ToList(),
-            });
+                var todasCriacoes = type.Funcoes.SelectMany(f => f.Criacoes);
 
-            var allEntitysLayerTarget = layer._classes.Select(x => x.Adapt<EntityDto>());
+                var typeCriaTarget = todasCriacoes.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto));
+                if (typeCriaTarget)
+                {
+                    continue;
+                }
 
-            var classesWithoutRequiredCreation = criacoesPorClasse
-              .Select(classe => new CriacoesPorClasseDto
-              {
-                  ClassName = classe.ClassName,
-                  Criacoes = classe.Criacoes.Where(c => c.CompareClassAndNamespace(allEntitysLayerTarget)).ToList()
-              })
-              .Where(classe => !classe.Criacoes.Any());
-
-            if (classesWithoutRequiredCreation.Any())
-            {
-                var violations = classesWithoutRequiredCreation.Select(classe => classe.Adapt<ViolationDto>());
-                return new PreResult(isSuccessful: false, violations);
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
             }
-            return new PreResult(isSuccessful: true);
+
+            return violacoes;
 
         }
     }

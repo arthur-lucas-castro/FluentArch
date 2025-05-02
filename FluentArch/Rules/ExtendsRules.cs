@@ -12,39 +12,84 @@ namespace FluentArch.Rules
     internal class ExtendsRules
     {
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public bool Extends(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotExtends(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasHerancas = classes.Where(classe => classe.Heranca is not null).Select(classe => classe.Heranca);
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                if (type.Heranca is null)
+                {
+                    continue;
+                }
 
-            var resultado = todasHerancas.Any(heranca => heranca!.CompareClassAndNamespace(todasEntityDto));
+                var typeHerdaTarget = type.Heranca.CompareClassAndNamespace(todasEntityDto);
 
-            return resultado;
+                if (!typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto> { type.Heranca } });
+            }
+
+            return violacoes;
         }
 
-        public bool ExtendsOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> ExtendsOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
             //TODO: Criar mapper
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasHerancas = classes.Where(classe => classe.Heranca is not null).Select(classe => classe.Heranca);
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = todasHerancas.All(heranca => heranca!.CompareClassAndNamespace(todasEntityDto.ToList()));
+            foreach (var type in types)
+            {
+                if (type.Heranca is null)
+                {
+                    continue;
+                }
 
-            return resultado;
+                var typeHerdaTarget = type.Heranca.CompareClassAndNamespace(todasEntityDto);
+
+                if (typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto> { type.Heranca } });
+            }
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public bool MustExtends(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> MustExtends(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasHerancas = classes.Where(classe => classe.Heranca is not null).Select(classe => classe.Heranca);
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = classes.All(classe => classe.Heranca is not null && classe.Heranca!.CompareClassAndNamespace(todasEntityDto));
+            foreach (var type in types)
+            {
+                if (type.Heranca is null)
+                {
+                    violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
+                    continue;
+                }
 
-            return resultado;
+                var typeHerdaTarget = type.Heranca.CompareClassAndNamespace(todasEntityDto);
+
+                if (typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto> { type.Heranca } });
+            }
+
+            return violacoes;
         }
     }
 }

@@ -12,36 +12,74 @@ namespace FluentArch.Rules
     internal class ImplementsRules
     {
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public bool Implements(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotImplements(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasInterfaces = classes.SelectMany(classe => classe.Interfaces);
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = todasInterfaces.Any(interfaceAnalisada => interfaceAnalisada.CompareClassAndNamespace(todasEntityDto.ToList()));
+            foreach (var type in types)
+            {
+                var todasInterfaces = types.SelectMany(classe => classe.Interfaces);
 
-            return resultado;
+                var interfacesQueViolamRegra = todasInterfaces.Where(interfaceAnalisada => interfaceAnalisada.CompareClassAndNamespace(todasEntityDto));
+
+                if (!interfacesQueViolamRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = interfacesQueViolamRegra.ToList() });
+            }
+
+            return violacoes;
         }
 
-        public bool ImplementsOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> ImplementsOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todasInterfaces = classes.SelectMany(classe => classe.Interfaces);
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = todasInterfaces.All(interfaceAnalisada => interfaceAnalisada.CompareClassAndNamespace(todasEntityDto.ToList()));
+            foreach (var type in types)
+            {
+                var todasInterfaces = types.SelectMany(classe => classe.Interfaces);
 
-            return resultado;
+                var interfacesQueViolamRegra = todasInterfaces.Where(interfaceAnalisada => !interfaceAnalisada.CompareClassAndNamespace(todasEntityDto));
+
+                if (!interfacesQueViolamRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = interfacesQueViolamRegra.ToList() });
+            }
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public bool MustImplements(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> MustImplements(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var resultado = classes.All(classe => classe.Interfaces.Any(criacao => criacao.CompareClassAndNamespace(todasEntityDto)));
+            var violacoes = new List<ViolationDto>();
 
-            return resultado;
+            foreach (var type in types)
+            {
+                var todasInterfaces = types.SelectMany(classe => classe.Interfaces);
+
+                var typeImplementaTarget = todasInterfaces.Any(interfaceAnalisada => interfaceAnalisada.CompareClassAndNamespace(todasEntityDto));
+
+                if (typeImplementaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
+            }
+
+            return violacoes;
         }
     }
 }

@@ -34,16 +34,20 @@ namespace TCC
                 var classVisitor = new ClassVisitor();
 
                 var arch = Architecture.Build(solution);
-                
-                var controllerLayer = arch.Classes().That().ResideInNamespace("SimpleAPI.Controllers.*").And().HaveNameEndingWith("Controller").DefineAsLayer();
-                var repositoryLayer = arch.Classes().That().ResideInNamespace("Repositorios").DefineAsLayer();
-                var servicoLayer = arch.Classes().That().ResideInNamespace("Servicos").DefineAsLayer();
 
-                var entityLayer = arch.Classes().That().ResideInNamespace("Entidade").DefineAsLayer();
+                //var controllerLayer = arch.Classes().That().ResideInNamespace("SimpleAPI.Controllers.*").And().HaveNameEndingWith("Controller").DefineAsLayer();
+                //var repositoryLayer = arch.Classes().That().ResideInNamespace("Repositorios").DefineAsLayer();
+                //var servicoLayer = arch.Classes().That().ResideInNamespace("Servicos").DefineAsLayer();
 
-                var teste2 = controllerLayer.Should().OnlyCanCreate("Repositorios");
 
-                classVisitor.ObterDadosDasClasses(servicos);
+                var layerTeste = arch.All().ResideInNamespace("Servicos").Must().Create("teste").GetResult();
+                var teste = arch.All().HaveNameEndingWith("Servicos");
+
+                //layerTeste.Should().CannotCreate("Repo").And();
+                //var entityLayer = arch.Classes().That().ResideInNamespace("Entidade").DefineAsLayer();
+
+                //var teste2 = controllerLayer.Should().OnlyCanCreate("Repositorios");
+
 
             }
         }

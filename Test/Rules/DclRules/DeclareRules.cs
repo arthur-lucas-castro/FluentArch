@@ -1,21 +1,25 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Rules;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Test.ClassHelpers;
 using Test.Helpers;
 
 namespace Test.Rules.DclRules
 {
-    public class CreateRulesTest
+    public class DeclareRules
     {
         private const string NameOfTargetClass = "TargetClass";
         private const string NamespaceSource = "Project.NamespaceSource";
         private const string NamespaceTarget = "Project.NamespaceTarget";
 
         [Fact]
-        public void CreateRules_CannnotCreateTargetClass_RuleIsNotValid()
+        public void DeclareRules_CannnotDeclareLocalTypesTargetClass_RuleIsNotValid()
         {
             #region Arrange
-            var listaCriacoes = new List<ClassAndNamespace> 
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
                 new ClassAndNamespace
                 {
@@ -24,12 +28,8 @@ namespace Test.Rules.DclRules
                 }
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes);
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
-
-            var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, classTarget });
-
-            var createRules = new CreateRules();
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
 
@@ -38,7 +38,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Create(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert
@@ -46,16 +46,15 @@ namespace Test.Rules.DclRules
             Assert.True(!result.IsSuccessful && result._violacoes.First().ClassName.Equals("ClassSource") && result._violacoes.First().Violations.First().Namespace.Equals(NamespaceTarget));
             #endregion
         }
-
         [Fact]
-        public void CreateRules_CannnotCreateTargetClass_RuleIsValid()
+        public void DeclareRules_CannnotDeclareLocalTypesTargetClass_RuleIsValid()
         {
             #region Arrange
-            var listaCriacoes = new List<ClassAndNamespace>
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes);
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
@@ -63,13 +62,10 @@ namespace Test.Rules.DclRules
             var layerTarget = arch.All().ResideInNamespace(NamespaceTarget);
             var layerSource = arch.All().ResideInNamespace(NamespaceSource);
 
-            var createRules = new CreateRules();
-
-
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Create(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert
@@ -79,12 +75,12 @@ namespace Test.Rules.DclRules
         }
 
         [Fact]
-        public void CreateRules_CreateOnlyTargetClass_RuleIsNotValid()
+        public void DeclareRules_DeclareLocalTypesOnlyTargetClass_RuleIsNotValid()
         {
             #region Arrange
-            var namespaceThatClasseSourceCreate = "Project.NamespaceThatClasseSourceCreate";
+            var namespaceThatClasseSourceDeclare = "Project.NamespaceThatClasseSourceDeclare";
             var nameBaseClass = "BaseClass";
-            var listaCriacoes = new List<ClassAndNamespace>
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
                 new ClassAndNamespace
                 {
@@ -94,15 +90,15 @@ namespace Test.Rules.DclRules
                 new ClassAndNamespace
                 {
                     Name = nameBaseClass,
-                    NamespacePath = namespaceThatClasseSourceCreate,
+                    NamespacePath = namespaceThatClasseSourceDeclare,
                 }
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes );
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
-            var classThatClasseSourceCreate = Classes.GetClassWithOneMethod(namespaceThatClasseSourceCreate, nameBaseClass);
+            var classThatClasseSourceDeclare = Classes.GetClassWithOneMethod(namespaceThatClasseSourceDeclare, nameBaseClass);
 
-            var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget, classThatClasseSourceCreate }));
+            var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget, classThatClasseSourceDeclare }));
 
             var layerTarget = arch.All().ResideInNamespace(NamespaceTarget);
             var layerSource = arch.All().ResideInNamespace(NamespaceSource);
@@ -110,20 +106,20 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Create(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert
 
-            Assert.True(!result.IsSuccessful && result._violacoes.First().ClassName.Equals("ClassSource") && result._violacoes.First().Violations.First().Namespace.Equals(namespaceThatClasseSourceCreate));
+            Assert.True(!result.IsSuccessful && result._violacoes.First().ClassName.Equals("ClassSource") && result._violacoes.First().Violations.First().Namespace.Equals(namespaceThatClasseSourceDeclare));
             #endregion
         }
 
         [Fact]
-        public void CreateRules_CreateOnlyTargetClass_RuleIsValid()
+        public void DeclareRules_DeclareLocalTypesOnlyTargetClass_RuleIsValid()
         {
             #region Arrange
-            var listaCriacoes = new List<ClassAndNamespace>
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
                 new ClassAndNamespace
                 {
@@ -132,7 +128,7 @@ namespace Test.Rules.DclRules
                 }
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes);
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
@@ -143,7 +139,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Create(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert
@@ -151,24 +147,24 @@ namespace Test.Rules.DclRules
             #endregion
         }
         [Fact]
-        public void CreateRules_MustCreateTargetClass_RuleIsNotValid()
+        public void DeclareRules_MustLocalTypesDeclareTargetClass_RuleIsNotValid()
         {
             #region Arrange
-            var namespaceThatClasseSourceCreate = "Project.NamespaceThatClasseSourceCreate";
+            var namespaceThatClasseSourceDeclare = "Project.NamespaceThatClasseSourceDeclare";
             var nameBaseClass = "BaseClass";
-            var listaCriacoes = new List<ClassAndNamespace>
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
                 new ClassAndNamespace
                 {
                     Name = nameBaseClass,
-                    NamespacePath = namespaceThatClasseSourceCreate,
+                    NamespacePath = namespaceThatClasseSourceDeclare,
                 },
 
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes);
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
-            var classThatClasseSourceCreate = Classes.GetClassWithOneMethod(namespaceThatClasseSourceCreate, nameBaseClass);
+            var classThatClasseSourceDeclare = Classes.GetClassWithOneMethod(namespaceThatClasseSourceDeclare, nameBaseClass);
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
 
@@ -178,7 +174,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Create(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert
@@ -188,10 +184,10 @@ namespace Test.Rules.DclRules
         }
 
         [Fact]
-        public void CreateRules_MustCreateTargetClass_RuleIsValid()
+        public void DeclareRules_MustDeclareLocalTypesTargetClass_RuleIsValid()
         {
             #region Arrange
-            var listaCriacoes = new List<ClassAndNamespace>
+            var listaDeclaracoes = new List<ClassAndNamespace>
             {
                 new ClassAndNamespace
                 {
@@ -201,7 +197,7 @@ namespace Test.Rules.DclRules
 
             };
 
-            var classSource = ClasseSourceHelper.ClassSourceCreateClasses(NamespaceSource, listaCriacoes);
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
@@ -212,7 +208,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Create(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Declare(NamespaceTarget).GetResult();
             #endregion
 
             #region Assert

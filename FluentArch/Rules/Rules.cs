@@ -3,389 +3,55 @@ using FluentArch.Arch.Layer;
 using FluentArch.DTO;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
-using static Microsoft.CodeAnalysis.CSharp.SyntaxTokenParser;
 
 
 namespace FluentArch.Rules
 {
-    public class Rules
+    public class Rules : IRules, IConcatRules
     {
-        public readonly IEnumerable<ClassEntityDto> _classes;
-        private readonly CreateRules _createRules;
-        private readonly AccessRules _accessRules;
-        private readonly DeclareRules _declareRules;
-        private readonly ExtendsRules _extendsRules;
-        private readonly ImplementsRules _implementsRules;
-        private readonly ThrowRules _throwRules;
-        private List<PreResult> _preResults;
 
-        public Rules(IEnumerable<ClassEntityDto> classes)
+        private ICompleteRule _builder;
+
+        public Rules(ICompleteRule builder)
         {
-            _classes = classes;
-            _createRules = new CreateRules();
-            _accessRules = new AccessRules();
-            _declareRules = new DeclareRules();
-            _extendsRules = new ExtendsRules();
-            _implementsRules = new ImplementsRules();
-            _throwRules = new ThrowRules();
-            _preResults = new List<PreResult>();
+            _builder = builder;
         }
-        public Rules(IEnumerable<ClassEntityDto> classes, List<PreResult> preResults)
+        
+        public IMustRules Must()
         {
-            _classes = classes;
-            _createRules = new CreateRules();
-            _accessRules = new AccessRules();
-            _declareRules = new DeclareRules();
-            _extendsRules = new ExtendsRules();
-            _implementsRules = new ImplementsRules();
-            _throwRules = new ThrowRules();
-            _preResults = preResults;
+            return new MustRules(_builder);
         }
 
-        #region Create
-        public IntermediaryRule CannotCreate(string namespacePath)
+        public ICannotRules Cannot()
         {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-            var result = _createRules.CannotCreate(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
+            return new CannotRules(_builder);
         }
-
-        //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public IntermediaryRule CannotCreate(Layer layer)
+        public IOnlyCanRules OnlyCan()
         {
-            var result = _createRules.CannotCreate(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
+            return new OnlyCanRules(_builder);
         }
-
-        public IntermediaryRule CanCreateOnly(string namespacePath)
+        public ICanOnlyRules CanOnly()
         {
-            var layerTarget = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _createRules.CreateOnly(layerTarget, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
+            return new CanOnlyRules(_builder);
         }
-        public IntermediaryRule CanCreateOnly(Layer layer)
-        {
-            var result = _createRules.CreateOnly(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        public IntermediaryRule OnlyCanCreate(string namespacePath)
-        {
-            var allClassesExceptLayerSource = Architecture.GetClasses().Except(_classes).ToList();
-
-            var layerTarget = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _createRules.CannotCreate(layerTarget, allClassesExceptLayerSource);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        public IntermediaryRule OnlyCanCreate(Layer layerTarget)
-        {
-            var allClassesExceptLayerSource = Architecture.GetClasses().Except(_classes).ToList();
-
-            var result = _createRules.CannotCreate(layerTarget, allClassesExceptLayerSource);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public IntermediaryRule MustCreate(string namespacePath)
-        {
-            var layerTarget = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _createRules.MustCreate(_classes, layerTarget);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        public IntermediaryRule MustCreate(Layer layerTarget)
-        {
-            var result = _createRules.MustCreate(_classes, layerTarget);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        #endregion
-
-        #region Access
-        public IntermediaryRule CannotAccess(Layer layer)
-        {
-            var result = _accessRules.CannotAccess(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        public IntermediaryRule CannotAccess(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _accessRules.CannotAccess(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        public IntermediaryRule CanAccessOnly(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _accessRules.AccessOnly(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        public IntermediaryRule CanAccessOnly(Layer layer)
-        {
-            var result = _accessRules.AccessOnly(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        public IntermediaryRule OnlyCanAccess(string namespacePath)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _accessRules.CannotAccess(layer, todasClassesExcetoModuloAtual);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        public IntermediaryRule OnlyCanAccess(Layer layer)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            var result = _accessRules.CannotAccess(layer, todasClassesExcetoModuloAtual);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public IntermediaryRule MustAccess(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var result = _accessRules.MustAccess(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        public IntermediaryRule MustAccess(Layer layer)
-        {
-            var result = _accessRules.MustAccess(layer, _classes);
-            _preResults.Add(result);
-            return new IntermediaryRule(_classes, _preResults);
-        }
-        #endregion
-
-        #region Declare
-        public bool CannotDeclare(Layer layer)
-        {
-
-            return !_declareRules.Declare(layer, _classes);
-        }
-        public bool CannotDeclare(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return !_declareRules.Declare(layer, _classes);
-        }
-        public bool CanDeclareOnly(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _declareRules.DeclareOnly(layer, _classes);
-        }
-        public bool CanDeclareOnly(Layer layer)
-        {
-            return _declareRules.DeclareOnly(layer, _classes);
-        }
-
-        public bool OnlyCanDeclare(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToArray();
-
-            return !_declareRules.Declare(layer, todasClassesExcetoModuloAtual);
-        }
-
-        public bool OnlyCanDeclare(Layer layer)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToArray();
-
-            return !_declareRules.Declare(layer, todasClassesExcetoModuloAtual);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public bool MustDeclare(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _declareRules.MustDeclare(layer, _classes);
-        }
-        public bool MustDeclare(Layer layer)
-        {
-            return _declareRules.MustDeclare(layer, _classes);
-        }
-        #endregion
-
-        #region Extends
-        public bool CannotExtends(Layer layer)
-        {
-            return !_extendsRules.Extends(layer, _classes);
-        }
-        public bool CannotExtends(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
- 
-            return !_extendsRules.Extends(layer, _classes);
-        }
-        public bool CanExtendsOnly(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _extendsRules.ExtendsOnly(layer, _classes);
-        }
-        public bool CanExtendsOnly(Layer layer)
-        {
-            return _extendsRules.ExtendsOnly(layer, _classes);
-        }
-
-        public bool OnlyCanExtends(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_extendsRules.Extends(layer, todasClassesExcetoModuloAtual);
-        }
-
-        public bool OnlyCanExtends(Layer layer)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_extendsRules.Extends(layer, todasClassesExcetoModuloAtual);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public bool MustExtends(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _extendsRules.MustExtends(layer, _classes);
-        }
-        public bool MustExtends(Layer layer)
-        {
-            return _extendsRules.MustExtends(layer, _classes); ;
-        }
-        #endregion
-
-        #region Implements
-        public bool CannotImplements(Layer layer)
-        {
-            return !_implementsRules.Implements(layer, _classes);
-        }
-        public bool CannotImplements(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return !_implementsRules.Implements(layer, _classes);
-        }
-        public bool CanImplementsOnly(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _implementsRules.ImplementsOnly(layer, _classes);
-        }
-        public bool CanImplementsOnly(Layer layer)
-        {
-            return _implementsRules.ImplementsOnly(layer, _classes);
-        }
-
-        public bool OnlyCanImplements(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_implementsRules.Implements(layer, todasClassesExcetoModuloAtual);
-        }
-
-        public bool OnlyCanImplements(Layer layer)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_implementsRules.Implements(layer, todasClassesExcetoModuloAtual);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public bool MustImplements(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _implementsRules.MustImplements(layer, _classes);
-        }
-        public bool MustImplements(Layer layer)
-        {
-            return _implementsRules.MustImplements(layer, _classes);
-        }
-        #endregion
-
-        #region Throw
-        public bool CannotThrows(Layer layer)
-        {
-            return !_throwRules.Throw(layer, _classes);
-        }
-        public bool CannotThrows(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return !_throwRules.Throw(layer, _classes);
-        }
-        public bool CanThrowsOnly(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _throwRules.ThrowsOnly(layer, _classes);
-        }
-        public bool CanThrowsOnly(Layer layer)
-        {
-            return _throwRules.ThrowsOnly(layer, _classes);
-        }
-
-        public bool OnlyCanThrows(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_throwRules.Throw(layer, todasClassesExcetoModuloAtual);
-        }
-
-        public bool OnlyCanThrows(Layer layer)
-        {
-            var todasClassesExcetoModuloAtual = Architecture.GetClasses().Except(_classes).ToList();
-
-            return !_throwRules.Throw(layer, todasClassesExcetoModuloAtual);
-        }
-
-        //DUVIDA: Todas classes do modulo A devem acessar o modulo B?
-        public bool MustThrows(string namespacePath)
-        {
-            var layer = Architecture.GetInstance().Classes().That().ResideInNamespace(namespacePath).DefineAsLayer();
-
-            return _throwRules.MustThrow(layer, _classes);
-        }
-        public bool MustThrows(Layer layer)
-        {
-            return _throwRules.MustThrow(layer, _classes);
-        }
-        #endregion
 
         #region Custom Rule
         public void UseCustomRule()
         {
             // return customRule.DefineCustomRule(_classes);
         }
+
+        public IRules And()
+        {
+            return this;
+        }
         #endregion
+
+        public ConditionResult GetResult()
+        {
+            var allResults = _builder.GetResults();
+
+            return new ConditionResult(!allResults.Any(result => !result.IsSuccessful), allResults.SelectMany(result => result._violacoes));
+        }
     }
 }

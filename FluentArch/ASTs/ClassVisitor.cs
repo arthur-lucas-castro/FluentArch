@@ -9,9 +9,9 @@ namespace FluentArch.ASTs
     {
         public ClassVisitor() { }
 
-        public List<ClassEntityDto> ObterDadosDasClasses(Project project)
+        public List<TypeEntityDto> ObterDadosDasClasses(Project project)
         {
-            var dadosClasse = new List<ClassEntityDto>();
+            var dadosClasse = new List<TypeEntityDto>();
             var compilation = project.GetCompilationAsync().Result;
 
             var trees = compilation!.SyntaxTrees.Where(st => (!st.FilePath.Contains(@"\obj\")));
@@ -23,13 +23,16 @@ namespace FluentArch.ASTs
                 //TODO: Analisar interfaces
                 foreach (var classDeclaration in classes)
                 {
-                    var classeAnalisada = new ClassEntityDto();
+                    var classeAnalisada = new TypeEntityDto();
                     classeAnalisada.Nome = classDeclaration.Identifier.Text;
+                    classeAnalisada.Local = FormatarStringUtils.FormatarLocalizacaoLinha(classDeclaration.GetLocation());
+
                     var symbol = semanticModel.GetDeclaredSymbol(classDeclaration);
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
                     {
                         classeAnalisada.Namespace = symbol.ContainingNamespace.ToString();
                     }
+                    
                     PreencherBase(classDeclaration, classeAnalisada, semanticModel);
                     PreencherAtributosDaClasse(classDeclaration, classeAnalisada, semanticModel);
                     PreencherFuncoes(classDeclaration, classeAnalisada, semanticModel);
@@ -39,7 +42,7 @@ namespace FluentArch.ASTs
 
             return dadosClasse;
         }
-        private static void PreencherBase(ClassDeclarationSyntax classDeclaration, ClassEntityDto dadosDaClasse, SemanticModel semanticModel)
+        private static void PreencherBase(ClassDeclarationSyntax classDeclaration, TypeEntityDto dadosDaClasse, SemanticModel semanticModel)
         {
             if (classDeclaration.BaseList is null)
             {
@@ -82,7 +85,7 @@ namespace FluentArch.ASTs
         }
 
         //TODO: validar PropertyDeclarationSyntax;
-        private static void PreencherAtributosDaClasse(ClassDeclarationSyntax classDeclaration, ClassEntityDto dadosDaClasse, SemanticModel semanticModel)
+        private static void PreencherAtributosDaClasse(ClassDeclarationSyntax classDeclaration, TypeEntityDto dadosDaClasse, SemanticModel semanticModel)
         {
             var attributes = classDeclaration.Members.OfType<PropertyDeclarationSyntax>().Where(p => !VisitorUtils.EhTipoPrimitivo(p.Type.ToString()));
 
@@ -129,7 +132,7 @@ namespace FluentArch.ASTs
             }
         }
 
-        private static void PreencherFuncoes(ClassDeclarationSyntax classDeclaration, ClassEntityDto dadosDaClasse, SemanticModel semanticModel)
+        private static void PreencherFuncoes(ClassDeclarationSyntax classDeclaration, TypeEntityDto dadosDaClasse, SemanticModel semanticModel)
         {
             var methods = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var method in methods)

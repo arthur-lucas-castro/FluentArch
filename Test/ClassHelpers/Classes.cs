@@ -24,7 +24,42 @@ namespace Test.ClassHelpers
 
             return code;
         }
+        public static string ClassAccessMethodOfClasses(string namespaceSource, string classNameSource, List<ClassAndNamespace> classesToAccess)
+        {
 
+            var body = "";
+
+            var usigns = "";
+
+            foreach (var classAndNamespace in classesToAccess)
+            {
+                usigns += @$"
+                    using {classAndNamespace.NamespacePath};";
+                body += @$"
+
+                    var classCreate{classAndNamespace.Name} = new {classAndNamespace.Name}();
+                    classCreate{classAndNamespace.Name}.MethodToTest();
+                ";
+
+            }
+
+            string code = @$"
+                using System;
+                {usigns}
+
+                namespace {namespaceSource}
+                {{
+                    public class {classNameSource}
+                    {{
+                        public static void MethodForTest()
+                        {{
+                            {body}
+                        }}
+                    }}
+                }}";
+
+            return code;
+        }
         public static string GetClassEmpty(string namespacePath, string className = "TargetClass")
         {
             string code = @$"

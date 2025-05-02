@@ -12,42 +12,72 @@ namespace FluentArch.Rules
     internal class ThrowRules
     {
         //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
-        public bool Throw(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> CannotThrow(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todosLancamentos = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Lancamentos));
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = todosLancamentos.Any(lancamento => lancamento.CompareClassAndNamespace(todasEntityDto.ToList()));
+            foreach (var type in types)
+            {
+                var todosLancamentos = type.Funcoes.SelectMany(f => f.Lancamentos);
 
-            return resultado;
+                var lancamentosQueViolamRegra = todosLancamentos.Where(lancamento => lancamento.CompareClassAndNamespace(todasEntityDto));
+                if (!lancamentosQueViolamRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = lancamentosQueViolamRegra.ToList() });
+            }
+
+            return violacoes;
         }
 
-        public bool ThrowsOnly(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> ThrowsOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
 
-            var todosLancamentos = classes.SelectMany(classe => classe.Funcoes.SelectMany(funcao => funcao.Lancamentos));
+            var violacoes = new List<ViolationDto>();
 
-            var resultado = todosLancamentos.All(lancamento => lancamento.CompareClassAndNamespace(todasEntityDto.ToList()));
+            foreach (var type in types)
+            {
+                var todosLancamentos = type.Funcoes.SelectMany(f => f.Lancamentos);
 
-            return resultado;
+                var lancamentosQueViolamRegra = todosLancamentos.Where(lancamento => !lancamento.CompareClassAndNamespace(todasEntityDto));
+                if (!lancamentosQueViolamRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = lancamentosQueViolamRegra.ToList() });
+            }
+
+            return violacoes;
         }
 
         //TODO: Validar
-        public bool MustThrow(Layer layer, IEnumerable<ClassEntityDto> classes)
+        public List<ViolationDto> MustThrow(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
-            var acessosPorClasse = classes.Select(classe => new LancamentosPorClasseDto
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
+
+            var violacoes = new List<ViolationDto>();
+
+            foreach (var type in types)
             {
-                Nome = classe.Nome,
-                Lancamentos = classe.Funcoes.SelectMany(funcao => funcao.Lancamentos).ToList(),
-            });
+                var todosLancamentos = type.Funcoes.SelectMany(f => f.Lancamentos);
 
-            var todasEntityDto = layer._classes.Select(x => x.Adapt<EntityDto>());
+                var typeThrowTarget = todosLancamentos.Any(lancamento => lancamento.CompareClassAndNamespace(todasEntityDto));
 
-            var resultado = acessosPorClasse.All(classe => classe.Lancamentos.Any(lancamento => lancamento.CompareClassAndNamespace(todasEntityDto)));
+                if (typeThrowTarget)
+                {
+                    continue;
+                }
 
-            return resultado;
+                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
+            }
+
+            return violacoes;
         }
     }
 }
