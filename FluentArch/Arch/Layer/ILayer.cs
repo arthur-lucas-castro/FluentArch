@@ -8,11 +8,14 @@ namespace FluentArch.Arch.Layer
 {
     public interface ILayer
     {
-        public IFilters And();
+        string GetName();
+        ILayer As(string name);
+        IFilters And();
         IMustRules Must();
         ICanOnlyRules CanOnly();
         ICannotRules Cannot();
         IOnlyCanRules OnlyCan();
+        IConcatRules UseCustomRule(ICustomRule customRule);
         public List<TypeEntityDto> GetTypes();
     }
 }

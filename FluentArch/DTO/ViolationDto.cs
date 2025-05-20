@@ -6,7 +6,8 @@ namespace FluentArch.DTO
 {
     public class ViolationDto
     {
-        public string ClassName = string.Empty;
+        public string ClassThatVioletesRule = string.Empty;
         public List<EntityDto> Violations = new();
+        public string ViolationReason = string.Empty;
     }
 }

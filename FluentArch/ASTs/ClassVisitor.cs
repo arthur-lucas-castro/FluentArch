@@ -24,8 +24,8 @@ namespace FluentArch.ASTs
                 foreach (var classDeclaration in classes)
                 {
                     var classeAnalisada = new TypeEntityDto();
-                    classeAnalisada.Nome = classDeclaration.Identifier.Text;
-                    classeAnalisada.Local = FormatarStringUtils.FormatarLocalizacaoLinha(classDeclaration.GetLocation());
+                    classeAnalisada.Name = classDeclaration.Identifier.Text;
+                    classeAnalisada.Location = FormatarStringUtils.FormatarLocalizacaoLinha(classDeclaration.GetLocation());
 
                     var symbol = semanticModel.GetDeclaredSymbol(classDeclaration);
                     if (symbol is INamedTypeSymbol namedTypeSymbol)
@@ -59,11 +59,11 @@ namespace FluentArch.ASTs
                 {
                     if (namedTypeSymbol.TypeKind == TypeKind.Class)
                     {
-                        dadosDaClasse.Heranca = new EntityDto
+                        dadosDaClasse.Inheritance = new EntityDto
                         {
-                            Nome = namedTypeSymbol.Name,
+                            Name = namedTypeSymbol.Name,
                             Namespace = namedTypeSymbol.ContainingNamespace.ToString(),
-                            Local = FormatarStringUtils.FormatarLocalizacaoLinha(baseType.GetLocation()),
+                            Location = FormatarStringUtils.FormatarLocalizacaoLinha(baseType.GetLocation()),
                         };
                         continue;
                     }
@@ -72,9 +72,9 @@ namespace FluentArch.ASTs
                     {
                         dadosDaClasse.Interfaces.Add(new EntityDto
                         {
-                            Nome = namedTypeSymbol.Name,
+                            Name = namedTypeSymbol.Name,
                             Namespace = namedTypeSymbol.ContainingNamespace.ToString(),
-                            Local = FormatarStringUtils.FormatarLocalizacaoLinha(baseType.GetLocation()),
+                            Location = FormatarStringUtils.FormatarLocalizacaoLinha(baseType.GetLocation()),
                         });
                     }
                 }
@@ -98,11 +98,11 @@ namespace FluentArch.ASTs
                     continue;
                 }
 
-                dadosDaClasse.Propriedades.Add(new EntityDto
+                dadosDaClasse.Properties.Add(new EntityDto
                 {
-                    Nome = symbol.Name,
+                    Name = symbol.Name,
                     Namespace = symbol.ContainingNamespace.ToString(),
-                    Local = FormatarStringUtils.FormatarLocalizacaoLinha(attribute.GetLocation())
+                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(attribute.GetLocation())
                 });
             }
 
@@ -122,11 +122,11 @@ namespace FluentArch.ASTs
                     return;
                 }
 
-                dadosDaClasse.Propriedades.Add(new EntityDto
+                dadosDaClasse.Properties.Add(new EntityDto
                 {
                     Namespace = symbol.ContainingNamespace.ToString(),
-                    Nome = symbol.Name,
-                    Local = FormatarStringUtils.FormatarLocalizacaoLinha(field.GetLocation()),
+                    Name = symbol.Name,
+                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(field.GetLocation()),
                 });
 
             }
@@ -137,12 +137,12 @@ namespace FluentArch.ASTs
             var methods = classDeclaration.DescendantNodes().OfType<MethodDeclarationSyntax>();
             foreach (var method in methods)
             {
-                dadosDaClasse.Funcoes.Add(FunctionVisitor.VisitarFuncao(method, semanticModel));
+                dadosDaClasse.Functions.Add(FunctionVisitor.VisitarFuncao(method, semanticModel));
             }
             var constructors = classDeclaration.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
             foreach (var constructor in constructors)
             {
-                dadosDaClasse.Funcoes.Add(FunctionVisitor.VisitarConstrutor(constructor, semanticModel));
+                dadosDaClasse.Functions.Add(FunctionVisitor.VisitarConstrutor(constructor, semanticModel));
             }
 
         }

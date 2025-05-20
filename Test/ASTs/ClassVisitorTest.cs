@@ -29,7 +29,7 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceExtends(NamespaceSource, tipoHeranca);
             var targetClass = Classes.GetClassEmpty(NamespaceTarget);
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
             #endregion
 
@@ -38,12 +38,12 @@ namespace Test.ASTs
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var heranca = classeSource!.Heranca;
+            var heranca = classeSource!.Inheritance;
             #endregion
 
             #region Arrange
 
-            Assert.True(heranca!.Namespace.Equals(resultadoEsperado.Namespace) && heranca!.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(heranca!.Namespace.Equals(resultadoEsperado.Namespace) && heranca!.Name.Equals(resultadoEsperado.Name));
             #endregion
         }
 
@@ -63,7 +63,7 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceImplements(NamespaceSource, listaInterfaces);
             var targetClass = Classes.GetIClassEmpty(NamespaceTarget);
 
-            var resultadoEsperado = new EntityDto { Nome = $"I{NameOfTargetClass}", Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = $"I{NameOfTargetClass}", Namespace = NamespaceTarget };
 
             #endregion
 
@@ -77,7 +77,7 @@ namespace Test.ASTs
 
             #region Arrange
 
-            Assert.True(@interface.Namespace.Equals(resultadoEsperado.Namespace) && @interface.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(@interface.Namespace.Equals(resultadoEsperado.Namespace) && @interface.Name.Equals(resultadoEsperado.Name));
             #endregion
         }
 
@@ -97,7 +97,7 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceWithFields(NamespaceSource, listaFields);
             var targetClass = Classes.GetClassWithOneMethod(NamespaceTarget);
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
             #endregion
 
@@ -106,12 +106,12 @@ namespace Test.ASTs
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var field = classeSource!.Propriedades.First();
+            var field = classeSource!.Properties.First();
             #endregion
 
             #region Arrange
 
-            Assert.True(field.Namespace.Equals(resultadoEsperado.Namespace) && field.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(field.Namespace.Equals(resultadoEsperado.Namespace) && field.Name.Equals(resultadoEsperado.Name));
             #endregion
         }
 
@@ -131,7 +131,7 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceWithProperties(NamespaceSource, listaProperties);
             var targetClass = Classes.GetClassWithOneMethod(NamespaceTarget);
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
             #endregion
 
@@ -140,12 +140,12 @@ namespace Test.ASTs
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var property = classeSource!.Propriedades.First();
+            var property = classeSource!.Properties.First();
             #endregion
 
             #region Arrange
 
-            Assert.True(property.Namespace.Equals(resultadoEsperado.Namespace) && property.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(property.Namespace.Equals(resultadoEsperado.Namespace) && property.Name.Equals(resultadoEsperado.Name));
             #endregion
         }
     }

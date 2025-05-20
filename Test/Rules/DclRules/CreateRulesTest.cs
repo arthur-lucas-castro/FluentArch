@@ -43,7 +43,7 @@ namespace Test.Rules.DclRules
 
             #region Assert
 
-            Assert.True(!result.IsSuccessful && result._violacoes.First().ClassName.Equals("ClassSource") && result._violacoes.First().Violations.First().Namespace.Equals(NamespaceTarget));
+            Assert.True(!result.IsSuccessful && result.Violations.First().ClassThatVioletesRule.Equals("ClassSource") && result.Violations.First().Violations.First().Namespace.Equals(NamespaceTarget));
             #endregion
         }
 
@@ -74,7 +74,7 @@ namespace Test.Rules.DclRules
 
             #region Assert
 
-            Assert.True(result.IsSuccessful && !result._violacoes.Any());
+            Assert.True(result.IsSuccessful && !result.Violations.Any());
             #endregion
         }
 
@@ -115,7 +115,7 @@ namespace Test.Rules.DclRules
 
             #region Assert
 
-            Assert.True(!result.IsSuccessful && result._violacoes.First().ClassName.Equals("ClassSource") && result._violacoes.First().Violations.First().Namespace.Equals(namespaceThatClasseSourceCreate));
+            Assert.True(!result.IsSuccessful && result.Violations.First().ClassThatVioletesRule.Equals("ClassSource") && result.Violations.First().Violations.First().Namespace.Equals(namespaceThatClasseSourceCreate));
             #endregion
         }
 
@@ -147,7 +147,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Assert
-            Assert.True(result.IsSuccessful && !result._violacoes.Any());
+            Assert.True(result.IsSuccessful && !result.Violations.Any());
             #endregion
         }
         [Fact]
@@ -216,7 +216,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Assert
-            Assert.True(result.IsSuccessful && !result._violacoes.Any());
+            Assert.True(result.IsSuccessful && !result.Violations.Any());
             #endregion
         }
     }

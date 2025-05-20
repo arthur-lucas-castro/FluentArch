@@ -13,7 +13,7 @@ namespace FluentArch.Rules
     internal class DeclareRules
     {
 
-        //TODO: Validar com classes de namespaces diferentes, possivel apos criacao do regex
+        private const string DEPENDECY_TYPE = "Declare";
         public List<ViolationDto> CannotDeclare(List<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
@@ -23,14 +23,20 @@ namespace FluentArch.Rules
             {
                 var todasDeclaracoes = ObterTodasDeclaracoes(type);
 
-                var declaracoes = todasDeclaracoes.Where(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
-                if (!declaracoes.Any())
+                var declaracoesQueViolamRegra = todasDeclaracoes.Where(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
+                if (!declaracoesQueViolamRegra.Any())
                 {
                     continue;
                 }
 
-                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = declaracoes.ToList() });
-            }          
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = declaracoesQueViolamRegra.ToList(),
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CANNOT_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                    });
+            }         
 
             return violacoes;
         }
@@ -50,13 +56,18 @@ namespace FluentArch.Rules
                     continue;
                 }
 
-                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = declaracoesQueQuebramRegra.ToList() });
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = declaracoesQueQuebramRegra.ToList(),
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                    });
             }
 
             return violacoes;
         }
 
-        //TODO: Validar
         public List<ViolationDto> MustDeclare(List<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
@@ -72,7 +83,42 @@ namespace FluentArch.Rules
                     continue;
                 }
 
-                violacoes.Add(new ViolationDto { ClassName = type.Nome, Violations = new List<EntityDto>() });
+                violacoes.Add(new ViolationDto { ClassThatVioletesRule = type.Name, Violations = new List<EntityDto>() });
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = new List<EntityDto>(),
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_MUST_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                    });
+
+            }
+
+            return violacoes;
+        }
+
+        public List<ViolationDto> OnlyCanDeclare(List<TypeEntityDto> types, ILayer layer)
+        {
+            var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                var todasDeclaracoes = ObterTodasDeclaracoes(type);
+
+                var declaracoesQueViolamRegra = todasDeclaracoes.Where(declaracao => declaracao.CompareClassAndNamespace(todasEntityDto));
+                if (!declaracoesQueViolamRegra.Any())
+                {
+                    continue;
+                }
+
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = declaracoesQueViolamRegra.ToList(),
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_ONLY_CAN_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                    });
             }
 
             return violacoes;
@@ -81,9 +127,9 @@ namespace FluentArch.Rules
         private static List<EntityDto> ObterTodasDeclaracoes(TypeEntityDto type)
         {
             var todasDeclaracoes = new List<EntityDto>();
-            todasDeclaracoes.AddRange(type.Funcoes.SelectMany(funcao => funcao.Parametros));
-            todasDeclaracoes.AddRange(type.Propriedades);
-            todasDeclaracoes.AddRange(type.Funcoes.SelectMany(funcao => funcao.TiposLocais));
+            todasDeclaracoes.AddRange(type.Functions.SelectMany(funcao => funcao.Parameters));
+            todasDeclaracoes.AddRange(type.Properties);
+            todasDeclaracoes.AddRange(type.Functions.SelectMany(funcao => funcao.LocalTypes));
 
             return todasDeclaracoes;
         }

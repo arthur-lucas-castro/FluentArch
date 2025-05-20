@@ -8,8 +8,8 @@ namespace FluentArch.DTO
 {
     public class EntityDto
     {
-        public string Nome { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public string Namespace { get; set; } = string.Empty;
-        public string Local { get; set; } = string.Empty;
+        public string Location { get; set; } = string.Empty;
     }
 }

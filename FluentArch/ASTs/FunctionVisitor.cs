@@ -23,22 +23,22 @@ namespace FluentArch.ASTs
             var symbol = semanticModel.GetDeclaredSymbol(method);
             if (symbol is IMethodSymbol namedTypeSymbol)
             {
-                functionDto.Nome = namedTypeSymbol.Name;
+                functionDto.Name = namedTypeSymbol.Name;
                 functionDto.Namespace = namedTypeSymbol.ContainingNamespace.ToString();
-                functionDto.Local = FormatarStringUtils.FormatarLocalizacaoLinha(method.GetLocation());
+                functionDto.Location = FormatarStringUtils.FormatarLocalizacaoLinha(method.GetLocation());
             }
             var body = method.Body;
             var parametros = method.ParameterList.Parameters.Where(p => !VisitorUtils.EhTipoPrimitivo(p.Type!.ToString()));
 
             var acessibilidade = method.Modifiers;
-            functionDto.Parametros.AddRange(PreencherParametros(semanticModel, parametros));
-            functionDto.TiposLocais.AddRange(PreencherTiposLocais(method, semanticModel));
-            functionDto.Acessos.AddRange(PreencherAcessos(method, semanticModel));
-            functionDto.Criacoes.AddRange(PreencherCriacoes(method, semanticModel));
-            functionDto.Lancamentos.AddRange(PreencherLancamentos(method, semanticModel));
+            functionDto.Parameters.AddRange(PreencherParametros(semanticModel, parametros));
+            functionDto.LocalTypes.AddRange(PreencherTiposLocais(method, semanticModel));
+            functionDto.Access.AddRange(PreencherAcessos(method, semanticModel));
+            functionDto.Creations.AddRange(PreencherCriacoes(method, semanticModel));
+            functionDto.Throws.AddRange(PreencherLancamentos(method, semanticModel));
             //EntityDto retornoEntity = PreencherRetornos(method, semanticModel, symbol);
 
-            functionDto.NivelAcesso = method.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
+            functionDto.AccessibilityLevel = method.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
                               mod.IsKind(SyntaxKind.PrivateKeyword) ||
                               mod.IsKind(SyntaxKind.ProtectedKeyword) ||
                               mod.IsKind(SyntaxKind.InternalKeyword))
@@ -57,9 +57,9 @@ namespace FluentArch.ASTs
             {
                 listaRetornos.Add(new EntityDto
                 {
-                    Nome = parameterSymbol.Name,
+                    Name = parameterSymbol.Name,
                     Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
-                    Local = FormatarStringUtils.FormatarLocalizacaoLinha(retorno.GetLocation())
+                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(retorno.GetLocation())
                 });
             }
 
@@ -75,20 +75,20 @@ namespace FluentArch.ASTs
             if (symbol is IMethodSymbol namedTypeSymbol)
             {
                 functionDto.Namespace = namedTypeSymbol.ContainingNamespace.ToString();
-                functionDto.Local = FormatarStringUtils.FormatarLocalizacaoLinha(construtor.GetLocation());
+                functionDto.Location = FormatarStringUtils.FormatarLocalizacaoLinha(construtor.GetLocation());
             }
             var body = construtor.Body;
             var parametros = construtor.ParameterList.Parameters.Where(p => !VisitorUtils.EhTipoPrimitivo(p.Type!.ToString()));
 
             var acessibilidade = construtor.Modifiers;
-            functionDto.Parametros.AddRange(PreencherParametros(semanticModel, parametros));
-            functionDto.TiposLocais.AddRange(PreencherTiposLocais(construtor, semanticModel));
-            functionDto.Acessos.AddRange(PreencherAcessos(construtor, semanticModel));
-            functionDto.Criacoes.AddRange(PreencherCriacoes(construtor, semanticModel));
-            functionDto.Lancamentos.AddRange(PreencherLancamentos(construtor, semanticModel));
+            functionDto.Parameters.AddRange(PreencherParametros(semanticModel, parametros));
+            functionDto.LocalTypes.AddRange(PreencherTiposLocais(construtor, semanticModel));
+            functionDto.Access.AddRange(PreencherAcessos(construtor, semanticModel));
+            functionDto.Creations.AddRange(PreencherCriacoes(construtor, semanticModel));
+            functionDto.Throws.AddRange(PreencherLancamentos(construtor, semanticModel));
             functionDto.Bloco = construtor.Body;
 
-            functionDto.NivelAcesso = construtor.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
+            functionDto.AccessibilityLevel = construtor.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
                               mod.IsKind(SyntaxKind.PrivateKeyword) ||
                               mod.IsKind(SyntaxKind.ProtectedKeyword) ||
                               mod.IsKind(SyntaxKind.InternalKeyword))
@@ -115,9 +115,9 @@ namespace FluentArch.ASTs
                 var type = typeInfo2.Type;
                 listaExcecao.Add(new EntityDto
                 {
-                    Nome = type!.Name,
+                    Name = type!.Name,
                     Namespace = type.ContainingNamespace.ToString(),
-                    Local = FormatarStringUtils.FormatarLocalizacaoLinha(throwStatement.GetLocation())
+                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(throwStatement.GetLocation())
                 });
             }
             return listaExcecao;
@@ -140,9 +140,9 @@ namespace FluentArch.ASTs
 
                     listaCriacoes.Add(new EntityDto
                     {
-                        Nome = symbol2.ContainingType.Name,
+                        Name = symbol2.ContainingType.Name,
                         Namespace = symbol2.ContainingNamespace.ToString(),
-                        Local = FormatarStringUtils.FormatarLocalizacaoLinha(objectCreation.GetLocation())
+                        Location = FormatarStringUtils.FormatarLocalizacaoLinha(objectCreation.GetLocation())
                     });
 
                 }
@@ -167,9 +167,9 @@ namespace FluentArch.ASTs
 
                     listaAcessos.Add(new EntityDto
                     {
-                        Nome = symbol2.ContainingType.Name,
+                        Name = symbol2.ContainingType.Name,
                         Namespace = symbol2.ContainingNamespace.ToString(),
-                        Local = FormatarStringUtils.FormatarLocalizacaoLinha(memberAcess.GetLocation())
+                        Location = FormatarStringUtils.FormatarLocalizacaoLinha(memberAcess.GetLocation())
                     });
 
                 }
@@ -190,16 +190,16 @@ namespace FluentArch.ASTs
 
                 if (declaredSymbol is ILocalSymbol localSymbol)
                 {
-                    if (VisitorUtils.EhTipoPrimitivo(localSymbol.Type.Name))
+                    if (VisitorUtils.EhTipoPrimitivo(localSymbol.Type.Name) || VisitorUtils.EhTipoPrimitivo(localSymbol.Type.ToString()))
                     {
                         continue;
                     }
 
                     listaDeclaracoes.Add(new EntityDto
                     {
-                        Nome = localSymbol.Type.Name,
-                        Namespace = localSymbol.Type.ContainingNamespace.ToString(),
-                        Local = FormatarStringUtils.FormatarLocalizacaoLinha(variableDeclaration.GetLocation())
+                        Name = localSymbol.Type.Name.Equals(string.Empty) ? localSymbol.Type.ToString() : localSymbol.Type.Name,
+                        Namespace = localSymbol.Type.ContainingNamespace is null ? string.Empty: localSymbol.Type.ContainingNamespace.ToString(),
+                        Location = FormatarStringUtils.FormatarLocalizacaoLinha(variableDeclaration.GetLocation())
                     });
                 }
             }
@@ -216,9 +216,9 @@ namespace FluentArch.ASTs
                 {
                     listaEntidades.Add(new EntityDto
                     {
-                        Nome = parameterSymbol.Type.Name,
+                        Name = parameterSymbol.Type.Name,
                         Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
-                        Local = FormatarStringUtils.FormatarLocalizacaoLinha(parametro.GetLocation())
+                        Location = FormatarStringUtils.FormatarLocalizacaoLinha(parametro.GetLocation())
                     });
                 }
             }

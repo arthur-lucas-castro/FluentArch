@@ -36,17 +36,17 @@ namespace Test.ASTs
 
             var solution = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
 
             var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var criacao = classeSource!.Funcoes.SelectMany(x => x.Criacoes).First();
+            var criacao = classeSource!.Functions.SelectMany(x => x.Creations).First();
 
 
-            Assert.True(criacao.Namespace.Equals(resultadoEsperado.Namespace) && criacao.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(criacao.Namespace.Equals(resultadoEsperado.Namespace) && criacao.Name.Equals(resultadoEsperado.Name));
 
         }
 
@@ -66,17 +66,17 @@ namespace Test.ASTs
 
             var solution = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
 
             var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var acesso = classeSource!.Funcoes.SelectMany(x => x.Acessos).First();
+            var acesso = classeSource!.Functions.SelectMany(x => x.Access).First();
 
 
-            Assert.True(acesso.Namespace.Equals(resultadoEsperado.Namespace) && acesso.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(acesso.Namespace.Equals(resultadoEsperado.Namespace) && acesso.Name.Equals(resultadoEsperado.Name));
 
         }
 
@@ -95,16 +95,16 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceWithParametersInMethod(NamespaceSource, listaAcessos);
             var targetClass = Classes.GetClassWithOneMethod(NamespaceTarget);           
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
             var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var parametro = classeSource!.Funcoes.SelectMany(x => x.Parametros).First();
+            var parametro = classeSource!.Functions.SelectMany(x => x.Parameters).First();
 
 
-            Assert.True(parametro.Namespace.Equals(resultadoEsperado.Namespace) && parametro.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(parametro.Namespace.Equals(resultadoEsperado.Namespace) && parametro.Name.Equals(resultadoEsperado.Name));
 
         }
 
@@ -123,7 +123,7 @@ namespace Test.ASTs
             var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaTiposLocais);
             var targetClass = Classes.GetClassWithOneMethod(NamespaceTarget);
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
             #endregion
 
@@ -132,12 +132,12 @@ namespace Test.ASTs
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var tipoLocal = classeSource!.Funcoes.SelectMany(x => x.TiposLocais).First();
+            var tipoLocal = classeSource!.Functions.SelectMany(x => x.LocalTypes).First();
             #endregion
 
             #region Assert
 
-            Assert.True(tipoLocal.Namespace.Equals(resultadoEsperado.Namespace) && tipoLocal.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(tipoLocal.Namespace.Equals(resultadoEsperado.Namespace) && tipoLocal.Name.Equals(resultadoEsperado.Name));
             #endregion
         }
 
@@ -157,17 +157,17 @@ namespace Test.ASTs
 
             var solution = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
-            var resultadoEsperado = new EntityDto { Nome = NameOfTargetClass, Namespace = NamespaceTarget };
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
 
 
             var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
 
             var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
 
-            var tipoLocal = classeSource!.Funcoes.SelectMany(x => x.Lancamentos).First();
+            var tipoLocal = classeSource!.Functions.SelectMany(x => x.Throws).First();
 
 
-            Assert.True(tipoLocal.Namespace.Equals(resultadoEsperado.Namespace) && tipoLocal.Nome.Equals(resultadoEsperado.Nome));
+            Assert.True(tipoLocal.Namespace.Equals(resultadoEsperado.Namespace) && tipoLocal.Name.Equals(resultadoEsperado.Name));
 
         }
     }

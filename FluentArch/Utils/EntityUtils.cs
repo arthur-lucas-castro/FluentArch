@@ -12,9 +12,9 @@ namespace FluentArch.Utils
         {
             return new EntityDto
             {
-                Nome = parameterSymbol.Name,
+                Name = parameterSymbol.Name,
                 Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
-                Local = FormatarStringUtils.FormatarLocalizacaoLinha(parametro.GetLocation())
+                Location = FormatarStringUtils.FormatarLocalizacaoLinha(parametro.GetLocation())
             };
         }
     }

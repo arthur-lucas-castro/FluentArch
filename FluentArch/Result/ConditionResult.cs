@@ -8,18 +8,25 @@ namespace FluentArch.Result
     public class ConditionResult
     {
         private bool _isSuccessful;
-        public bool IsSuccessful { get { return _isSuccessful; } }
-        public IEnumerable<ViolationDto> _violacoes;
+        private IEnumerable<ViolationDto> _violations;
+
+        public bool IsSuccessful => _isSuccessful;
+        public IEnumerable<ViolationDto> Violations => _violations;
 
         public ConditionResult(bool isSuccessful)
         {
             _isSuccessful = isSuccessful;
-            _violacoes = new List<ViolationDto>();
+            _violations = new List<ViolationDto>();
+        }
+        public ConditionResult(bool isSuccessful, ViolationDto violacao)
+        {
+            _isSuccessful = isSuccessful;
+            _violations = new List<ViolationDto> { violacao };
         }
         public ConditionResult(bool isSuccessful, IEnumerable<ViolationDto> violacoes)
         {
             _isSuccessful = isSuccessful;
-            _violacoes = violacoes;
+            _violations = violacoes;
         }
     }
 }

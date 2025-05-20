@@ -8,12 +8,11 @@ namespace FluentArch.DTO
 {
     public class TypeEntityDto : EntityDto
     {
-        public List<FunctionEntityDto> Funcoes { get; set; } = new List<FunctionEntityDto>();
-        public List<EntityDto> Propriedades { get; set; } = new List<EntityDto>();
-        public EntityDto? Heranca { get; set; }
-        public List<EntityDto> Interfaces { get; set; } = new List<EntityDto>(); //TODO: Criar tipo para interface
-        public int QuantidadeLinhas { get; set; }
-        public string NivelAcesso { get; set; } = string.Empty;
-        public EntityDto? Anotacao { get; set; } 
+        public List<FunctionEntityDto> Functions { get; set; } = new List<FunctionEntityDto>();
+        public List<EntityDto> Properties { get; set; } = new List<EntityDto>();
+        public EntityDto? Inheritance { get; set; }
+        public List<EntityDto> Interfaces { get; set; } = new List<EntityDto>();
+        public string AccessibilityLevel { get; set; } = string.Empty;
+        public List<EntityDto> Annotations { get; set; } = new List<EntityDto>();
     }
 }

@@ -36,9 +36,9 @@ namespace FluentArch.Rules
         }
 
         #region Custom Rule
-        public void UseCustomRule()
+        public IConcatRules UseCustomRule(ICustomRule customRule)
         {
-            // return customRule.DefineCustomRule(_classes);
+            return new CustomRule(_builder).ExecuteCustomRule(customRule);
         }
 
         public IRules And()
@@ -51,7 +51,7 @@ namespace FluentArch.Rules
         {
             var allResults = _builder.GetResults();
 
-            return new ConditionResult(!allResults.Any(result => !result.IsSuccessful), allResults.SelectMany(result => result._violacoes));
+            return new ConditionResult(!allResults.Any(result => !result.IsSuccessful), allResults.SelectMany(result => result.Violations));
         }
     }
 }

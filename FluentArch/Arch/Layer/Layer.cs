@@ -10,6 +10,7 @@ namespace FluentArch.Arch.Layer
 {
     public class Layer : ILayer
     {
+        private string _name = string.Empty;
         public readonly IEnumerable<TypeEntityDto> _classes;
         private ICompleteRule _builder;
         private IRules _rules;
@@ -23,12 +24,20 @@ namespace FluentArch.Arch.Layer
 
         public List<TypeEntityDto> GetTypes()
         {
-            return _builder.GetTypes();
+            return _classes.ToList();
         }
 
+        public ILayer As(string name)
+        {
+            this._name = name;
+            return this;
+        }
         public IFilters And()
         {
-            return new RuleFilter(_builder);
+            var builder = new RuleBuilder();
+            builder.UpdateTypes(_classes.ToList());
+
+            return new RuleFilter(builder);
         }
 
         public IMustRules Must()
@@ -50,6 +59,16 @@ namespace FluentArch.Arch.Layer
         public IOnlyCanRules OnlyCan()
         {
             return _rules.OnlyCan();
+        }
+
+        public IConcatRules UseCustomRule(ICustomRule customRule)
+        {
+            return new CustomRule(_builder).ExecuteCustomRule(customRule);
+        }
+
+        public string GetName()
+        {
+            return _name;
         }
     }
 }

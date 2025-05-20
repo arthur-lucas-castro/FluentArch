@@ -21,7 +21,8 @@ namespace FluentArch.Utils
         }
         public static bool CompareClassAndNamespace(this EntityDto entityBase, IEnumerable<EntityDto> entitysComper)
         {
-            return entitysComper.Any(comper => comper.Namespace.Equals(entityBase.Namespace) && comper.Nome.Equals(entityBase.Nome));
+            return entitysComper.Any(comper => comper.Namespace.Equals(entityBase.Namespace) && comper.Name.Equals(entityBase.Name));
         }
+
     }
 }
