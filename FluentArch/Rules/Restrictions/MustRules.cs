@@ -1,17 +1,13 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Layer;
+using FluentArch.Layers;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
-using FluentArch.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using FluentArch.Rules.Interfaces.Restrictions;
 
-namespace FluentArch.Rules
+namespace FluentArch.Rules.Restrictions
 {
-    public class MustRules : IMustRules
+    public class MustRules : IRestrictions
     {
-        private const string ERROR_DESCRIPTION = "The layer is expected to {0} from a class in module {1}, but it is not doing so.";
         private readonly CreateRules _createRules;
         private readonly AccessRules _accessRules;
         private readonly DeclareRules _declareRules;
@@ -19,9 +15,9 @@ namespace FluentArch.Rules
         private readonly ImplementsRules _implementsRules;
         private readonly ThrowRules _throwRules;
 
-        private ICompleteRule _builder;
+        private IRuleBuilder _builder;
 
-        public MustRules(ICompleteRule builder) 
+        public MustRules(IRuleBuilder builder) 
         {
             _builder = builder;
             _createRules = new CreateRules();

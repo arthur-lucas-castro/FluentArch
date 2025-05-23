@@ -1,20 +1,18 @@
 ﻿using FluentArch.DTO;
 using FluentArch.Rules.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using FluentArch.Rules.Interfaces.Restrictions;
 
-namespace FluentArch.Layer
+namespace FluentArch.Layers
 {
     public interface ILayer
     {
         string GetName();
         ILayer As(string name);
         IFilters And();
-        IMustRules Must();
-        ICanOnlyRules CanOnly();
-        ICannotRules Cannot();
-        IOnlyCanRules OnlyCan();
+        IRestrictions Must();
+        IRestrictions CanOnly();
+        IRestrictions Cannot();
+        IRestrictions OnlyCan();
         IConcatRules UseCustomRule(ICustomRule customRule);
         public List<TypeEntityDto> GetTypes();
     }

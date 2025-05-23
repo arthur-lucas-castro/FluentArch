@@ -1,7 +1,4 @@
-﻿using FluentArch.Layer;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FluentArch.Layers;
 
 namespace FluentArch.Rules.Interfaces
 {

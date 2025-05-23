@@ -4,17 +4,14 @@ using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
 using FluentArch.Utils;
 using Mapster;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FluentArch.Rules
 {
     public class CustomRule
     {
-        private ICompleteRule _builder;
+        private IRuleBuilder _builder;
 
-        public CustomRule(ICompleteRule builder)
+        public CustomRule(IRuleBuilder builder)
         {
             _builder = builder;
         }

@@ -1,16 +1,13 @@
-﻿using FluentArch.Arch.Layer;
-using FluentArch.Result;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+using FluentArch.Rules.Interfaces.Restrictions;
 
 namespace FluentArch.Rules.Interfaces
 {
     public interface IRules
     {
-        IMustRules Must();
-        ICanOnlyRules CanOnly();
-        ICannotRules Cannot();
-        IOnlyCanRules OnlyCan();
+        IRestrictions Must();
+        IRestrictions CanOnly();
+        IRestrictions Cannot();
+        IRestrictions OnlyCan();
     }
 }

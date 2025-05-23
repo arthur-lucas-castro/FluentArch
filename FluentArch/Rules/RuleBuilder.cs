@@ -1,42 +1,39 @@
-﻿using FluentArch.DTO;
+﻿using FluentArch.Arch;
+using FluentArch.DTO;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Data;
 
 namespace FluentArch.Rules
 {
-    public class RuleBuilder : ICompleteRule
+    public class RuleBuilder : IRuleBuilder
     {
-        private CompleteRule _completeRule;
-        public RuleBuilder() 
+        private ArchRule _archRule;
+
+        public RuleBuilder(IEnumerable<TypeEntityDto> types)
         {
-            _completeRule = new CompleteRule();
+            _archRule = new ArchRule(types.ToList());
+            Architecture.AddRule(_archRule);
         }
-        public RuleBuilder(List<TypeEntityDto> types)
-        {
-            _completeRule = new CompleteRule();
-            _completeRule.UpdateTypes(types);
-        }
+        
         public void AddResults(ConditionResult conditionResult)
         {
-            _completeRule.AddResults(conditionResult);
+            _archRule.AddResults(conditionResult);
         }
 
         public List<ConditionResult> GetResults()
         {
-            return _completeRule.GetResults();
+            return _archRule.GetResults();
         }
 
         public List<TypeEntityDto> GetTypes()
         {
-            return _completeRule.GetTypes();
+            return _archRule.GetTypes();
         }
 
-        public void UpdateTypes(List<TypeEntityDto> newTypes)
+        public void UpdateTypes(IEnumerable<TypeEntityDto> newTypes)
         {
-            _completeRule.UpdateTypes(newTypes);
+            _archRule.UpdateTypes(newTypes.ToList());
         }
     }
 }

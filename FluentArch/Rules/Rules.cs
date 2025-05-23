@@ -1,8 +1,7 @@
-﻿using FluentArch.Arch;
-using FluentArch.Arch.Layer;
-using FluentArch.DTO;
-using FluentArch.Result;
+﻿using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
+using FluentArch.Rules.Interfaces.Restrictions;
+using FluentArch.Rules.Restrictions;
 
 
 namespace FluentArch.Rules
@@ -10,32 +9,31 @@ namespace FluentArch.Rules
     public class Rules : IRules, IConcatRules
     {
 
-        private ICompleteRule _builder;
+        private IRuleBuilder _builder;
 
-        public Rules(ICompleteRule builder)
+        public Rules(IRuleBuilder builder)
         {
             _builder = builder;
         }
         
-        public IMustRules Must()
+        public IRestrictions Must()
         {
             return new MustRules(_builder);
         }
 
-        public ICannotRules Cannot()
+        public IRestrictions Cannot()
         {
             return new CannotRules(_builder);
         }
-        public IOnlyCanRules OnlyCan()
+        public IRestrictions OnlyCan()
         {
             return new OnlyCanRules(_builder);
         }
-        public ICanOnlyRules CanOnly()
+        public IRestrictions CanOnly()
         {
             return new CanOnlyRules(_builder);
         }
 
-        #region Custom Rule
         public IConcatRules UseCustomRule(ICustomRule customRule)
         {
             return new CustomRule(_builder).ExecuteCustomRule(customRule);
@@ -45,7 +43,6 @@ namespace FluentArch.Rules
         {
             return this;
         }
-        #endregion
 
         public ConditionResult GetResult()
         {

@@ -6,9 +6,9 @@ using System.Text;
 
 namespace FluentArch.Rules.Interfaces
 {
-    public interface ICompleteRule
+    public interface IRuleBuilder
     {
-        void UpdateTypes(List<TypeEntityDto> newTypes);
+        void UpdateTypes(IEnumerable<TypeEntityDto> newTypes);
         void AddResults(ConditionResult conditionResult);
         List<TypeEntityDto> GetTypes();
         List<ConditionResult> GetResults();

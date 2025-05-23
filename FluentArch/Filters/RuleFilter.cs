@@ -1,67 +1,57 @@
-﻿using FluentArch.Layer;
-using FluentArch.Result;
-using FluentArch.Rules;
+﻿using FluentArch.Arch;
+using FluentArch.DTO;
+using FluentArch.Layers;
 using FluentArch.Rules.Interfaces;
 using FluentArch.Utils;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace FluentArch.Filters
 {
     public class RuleFilter : IFilters
     {
-        private readonly ICompleteRule _builder;
+        private List<TypeEntityDto> _types;
 
-        public RuleFilter(ICompleteRule builder) 
+        public RuleFilter(List<TypeEntityDto> types)
         {
-            _builder = builder;
+            _types = types;
         }
 
         public ILayer ResideInNamespace(string namespacePath)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => classe.Namespace.NamespaceCompare(namespacePath));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => classe.Namespace.NamespaceCompare(namespacePath));
+            return new Layer(classesFiltradas);
         }
 
         public ILayer HaveNameStartingWith(string startingName)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => classe.Name.StartsWith(startingName));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder); ;
+            var classesFiltradas = _types.Where(classe => classe.Name.StartsWith(startingName));
+            return new Layer(_types); ;
         }
         public ILayer HaveNameStartingWith(string startingName, StringComparison stringComparison)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => classe.Name.StartsWith(startingName, stringComparison));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => classe.Name.StartsWith(startingName, stringComparison));
+            return new Layer(_types);
         }
 
         public ILayer HaveNameEndingWith(string endingName)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => classe.Name.EndsWith(endingName));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => classe.Name.EndsWith(endingName));
+            return new Layer(_types);
         }
         public ILayer HaveNameEndingWith(string endingName, StringComparison stringComparison)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => classe.Name.EndsWith(endingName, stringComparison));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => classe.Name.EndsWith(endingName, stringComparison));
+            return new Layer(_types);
         }
         public ILayer HaveNameMatchingWith(string pattern, RegexOptions regexOptions)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => Regex.IsMatch(classe.Name, pattern, regexOptions));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => Regex.IsMatch(classe.Name, pattern, regexOptions));
+            return new Layer(_types);
         }
         public ILayer HaveNameMatchingWith(string pattern)
         {
-            var classesFiltradas = _builder.GetTypes().Where(classe => Regex.IsMatch(classe.Name, pattern));
-            _builder.UpdateTypes(classesFiltradas.ToList());
-            return new Layer(_builder.GetTypes(), _builder);
+            var classesFiltradas = _types.Where(classe => Regex.IsMatch(classe.Name, pattern));
+            return new Layer(_types);
         }
 
     }

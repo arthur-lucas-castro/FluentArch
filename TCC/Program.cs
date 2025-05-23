@@ -1,6 +1,6 @@
 ﻿using FluentArch.Arch;
 using FluentArch.ASTs;
-using FluentArch.Layer;
+using FluentArch.Layers;
 using FluentArch.Result;
 using Mapster;
 using Microsoft.Build.Locator;
@@ -46,7 +46,6 @@ namespace TCC
                 //arch.All().ResideInNamespace("Entidades").UseCustomRule(new TypeCannotHaveFunctionsRule()).GetResult();
 
                 var arch = Architecture.Build(solution);
-
                 ILayer camadaApi = arch.All().ResideInNamespace("N_Tier.API.*").As("Api layer");
                 ILayer camadaApplication = arch.All().ResideInNamespace("N_Tier.Application.*").As("Application layer");
                 ILayer camadaDataAccess = arch.All().ResideInNamespace("N_Tier.DataAccess.*").As("DataAccess layer");
@@ -62,7 +61,7 @@ namespace TCC
                 listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Services.*").Cannot().Create(camadaDataAccess).GetResult());
                 listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Exceptions").Must().Extends("System").GetResult());
                 listaResultados.Add(camadaModels.UseCustomRule(new TypeCannotHaveFunctionsRule()).GetResult());
-
+                listaResultados = arch.GetResults().ToList();
                 Console.WriteLine("Results: ");
                 var index = 1;
                 foreach (var item in listaResultados.Where(x => !x.IsSuccessful))
@@ -70,16 +69,9 @@ namespace TCC
 
                     foreach (var violacao in item.Violations)
                     {
-                        if (index < 5 || index > 22)
-                        {
-                            Console.WriteLine($"{index}. {violacao.ViolationReason}\n");
-                        }
-                        else if(index < 10)
-                        {
-                            Console.WriteLine($".");
-                        }
+                        Console.WriteLine($"{index}. {violacao.ViolationReason}\n");
 
-                            index++;
+                        index++;
                     }
                 }
 

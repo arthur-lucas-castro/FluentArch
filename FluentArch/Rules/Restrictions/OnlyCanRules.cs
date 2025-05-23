@@ -1,14 +1,13 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Layer;
+using FluentArch.Layers;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
+using FluentArch.Rules.Interfaces.Restrictions;
 using FluentArch.Utils;
-using System.Linq.Expressions;
-using System.Reflection.Emit;
 
-namespace FluentArch.Rules
+namespace FluentArch.Rules.Restrictions
 {
-    public class OnlyCanRules : IOnlyCanRules
+    public class OnlyCanRules : IRestrictions
     {
         private readonly CreateRules _createRules;
         private readonly AccessRules _accessRules;
@@ -17,9 +16,9 @@ namespace FluentArch.Rules
         private readonly ImplementsRules _implementsRules;
         private readonly ThrowRules _throwRules;
 
-        private ICompleteRule _builder;
+        private IRuleBuilder _builder;
 
-        public OnlyCanRules(ICompleteRule builder)
+        public OnlyCanRules(IRuleBuilder builder)
         {
             _builder = builder;
             _createRules = new CreateRules();

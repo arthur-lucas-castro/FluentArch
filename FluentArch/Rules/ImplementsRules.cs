@@ -1,17 +1,18 @@
-﻿using FluentArch.DTO.Rules;
-using FluentArch.DTO;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using FluentArch.DTO;
 using FluentArch.Utils;
 using Mapster;
-using FluentArch.Layer;
+using FluentArch.Layers;
 
 namespace FluentArch.Rules
 {
     internal class ImplementsRules
     {
-        private const string DEPENDECY_TYPE = "Implements";
+        private string _dependecyType = "Implements";
+        public ImplementsRules() { }
+        public ImplementsRules(string dependecyType)
+        {
+            _dependecyType = dependecyType;
+        }
         public List<ViolationDto> CannotImplements(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
@@ -34,7 +35,7 @@ namespace FluentArch.Rules
                    {
                        ClassThatVioletesRule = type.Name,
                        Violations = interfacesQueViolamRegra.ToList(),
-                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CANNOT_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CANNOT_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
                    });
             }
 
@@ -63,7 +64,7 @@ namespace FluentArch.Rules
                    {
                        ClassThatVioletesRule = type.Name,
                        Violations = interfacesQueViolamRegra.ToList(),
-                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
                    });
             }
 
@@ -92,7 +93,7 @@ namespace FluentArch.Rules
                    {
                        ClassThatVioletesRule = type.Name,
                        Violations = new List<EntityDto>(),
-                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_MUST_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_MUST_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
                    });
             }
 
@@ -121,7 +122,7 @@ namespace FluentArch.Rules
                    {
                        ClassThatVioletesRule = type.Name,
                        Violations = interfacesQueViolamRegra.ToList(),
-                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [DEPENDECY_TYPE, layer.GetName(), type.Name])
+                       ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
                    });
             }
 

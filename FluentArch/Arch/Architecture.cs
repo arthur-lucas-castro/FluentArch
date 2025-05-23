@@ -1,19 +1,20 @@
 ﻿using FluentArch.ASTs;
 using FluentArch.DTO;
 using FluentArch.Filters;
+using FluentArch.Layers;
+using FluentArch.Result;
 using FluentArch.Rules;
 using FluentArch.Rules.Interfaces;
 using Microsoft.CodeAnalysis;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace FluentArch.Arch
 {
-    public class Architecture
+    public  class Architecture
     {
         private static Architecture? _instance;
         private List<TypeEntityDto> _classes = new();
+
+        private static List<ArchRule> _rules = new();
         private Architecture(Solution solution) 
         {
             var classVisitor = new ClassVisitor();
@@ -40,13 +41,10 @@ namespace FluentArch.Arch
             }
             return _instance._classes;
         }
-
+       
         public RuleFilter Classes()
         {
-            var builder = new RuleBuilder();
-            builder.UpdateTypes(_classes);
-
-            return new RuleFilter(builder);
+            return new RuleFilter(_classes);
         }
 
         public static Architecture GetInstance()
@@ -58,20 +56,20 @@ namespace FluentArch.Arch
             return _instance;
         }
 
-        public RuleFilter AreClasses()
-        {
-            var builder = new RuleBuilder();
-            builder.UpdateTypes(_classes);
-
-            return new RuleFilter(builder);
-        }
-
         public IFilters All()
         {
-            var builder = new RuleBuilder();
-            builder.UpdateTypes(_classes);
+            return new RuleFilter(_classes);
+        }
 
-            return new RuleFilter(builder);
+        internal static void AddRule(ArchRule archRule)
+        {
+            _rules.Add(archRule);
+        }
+
+        public IEnumerable<ConditionResult> GetResults()
+        {
+            var allRusults = _rules.SelectMany(rule => rule.GetResults());
+            return allRusults.Where(x => !x.IsSuccessful);
         }
     }
 
