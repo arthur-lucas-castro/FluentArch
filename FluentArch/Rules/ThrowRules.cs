@@ -1,5 +1,5 @@
-﻿using FluentArch.Arch.Layer;
-using FluentArch.DTO;
+﻿using FluentArch.DTO;
+using FluentArch.Layer;
 using FluentArch.Utils;
 using Mapster;
 

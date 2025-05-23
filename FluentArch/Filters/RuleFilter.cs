@@ -1,4 +1,4 @@
-﻿using FluentArch.Arch.Layer;
+﻿using FluentArch.Layer;
 using FluentArch.Result;
 using FluentArch.Rules;
 using FluentArch.Rules.Interfaces;
@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace FluentArch
+namespace FluentArch.Filters
 {
     public class RuleFilter : IFilters
     {

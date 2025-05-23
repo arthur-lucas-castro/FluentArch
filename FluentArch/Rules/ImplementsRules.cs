@@ -1,11 +1,11 @@
-﻿using FluentArch.Arch.Layer;
-using FluentArch.DTO.Rules;
+﻿using FluentArch.DTO.Rules;
 using FluentArch.DTO;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using FluentArch.Utils;
 using Mapster;
+using FluentArch.Layer;
 
 namespace FluentArch.Rules
 {

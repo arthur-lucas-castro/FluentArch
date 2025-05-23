@@ -1,5 +1,6 @@
 ﻿using FluentArch.ASTs;
 using FluentArch.DTO;
+using FluentArch.Filters;
 using FluentArch.Rules;
 using FluentArch.Rules.Interfaces;
 using Microsoft.CodeAnalysis;

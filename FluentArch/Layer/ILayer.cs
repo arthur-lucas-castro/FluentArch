@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FluentArch.Arch.Layer
+namespace FluentArch.Layer
 {
     public interface ILayer
     {

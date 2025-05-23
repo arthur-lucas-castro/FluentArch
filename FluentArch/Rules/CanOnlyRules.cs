@@ -1,5 +1,5 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Arch.Layer;
+using FluentArch.Layer;
 using FluentArch.Result;
 using FluentArch.Rules.Interfaces;
 

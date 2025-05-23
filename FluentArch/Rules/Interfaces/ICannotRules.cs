@@ -1,4 +1,4 @@
-﻿using FluentArch.Arch.Layer;
+﻿using FluentArch.Layer;
 using System;
 using System.Collections.Generic;
 using System.Text;

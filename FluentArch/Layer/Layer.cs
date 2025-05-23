@@ -6,7 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FluentArch.Arch.Layer
+namespace FluentArch.Layer
 {
     public class Layer : ILayer
     {
@@ -29,7 +29,7 @@ namespace FluentArch.Arch.Layer
 
         public ILayer As(string name)
         {
-            this._name = name;
+            _name = name;
             return this;
         }
         public IFilters And()

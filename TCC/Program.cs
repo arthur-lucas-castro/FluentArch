@@ -1,6 +1,6 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Arch.Layer;
 using FluentArch.ASTs;
+using FluentArch.Layer;
 using FluentArch.Result;
 using Mapster;
 using Microsoft.Build.Locator;
@@ -72,7 +72,7 @@ namespace TCC
                     {
                         if (index < 5 || index > 22)
                         {
-                            Console.WriteLine($"{index}. {violacao.ViolationReason}");
+                            Console.WriteLine($"{index}. {violacao.ViolationReason}\n");
                         }
                         else if(index < 10)
                         {

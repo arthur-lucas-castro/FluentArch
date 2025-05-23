@@ -1,6 +1,6 @@
-﻿using FluentArch.Arch.Layer;
-using FluentArch.DTO;
+﻿using FluentArch.DTO;
 using FluentArch.DTO.Rules;
+using FluentArch.Layer;
 using FluentArch.Result;
 using FluentArch.Utils;
 using Mapster;
