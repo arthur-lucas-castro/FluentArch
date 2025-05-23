@@ -38,7 +38,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -65,7 +65,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -106,7 +106,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -139,7 +139,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -174,7 +174,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -208,7 +208,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Declare(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Declare(NamespaceTarget).Check();
             #endregion
 
             #region Assert

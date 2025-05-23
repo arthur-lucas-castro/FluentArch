@@ -44,7 +44,7 @@ namespace FluentArch.Rules
             return this;
         }
 
-        public ConditionResult GetResult()
+        public ConditionResult Check()
         {
             var allResults = _builder.GetResults();
 

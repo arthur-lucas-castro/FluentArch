@@ -8,6 +8,6 @@ namespace FluentArch.Rules.Interfaces
     public interface IConcatRules
     {
         IRules And();
-        ConditionResult GetResult();
+        ConditionResult Check();
     }
 }

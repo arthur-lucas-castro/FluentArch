@@ -54,14 +54,14 @@ namespace TCC
                 ILayer camadaModels = arch.All().ResideInNamespace("N_Tier.Application.Models.*").As("Models layer");
 
                 var listaResultados = new List<ConditionResult>();
-                listaResultados.Add(camadaApi.OnlyCan().Depend(camadaApplication).GetResult());
-                listaResultados.Add(camadaApplication.OnlyCan().Depend(camadaDataAccess).GetResult());
-                listaResultados.Add(camadaDataAccess.Cannot().Depend(camadaApplication).And().Cannot().Depend(camadaApi).GetResult());
-                listaResultados.Add(camadaCore.Cannot().Depend(camadaDataAccess).GetResult());
-                listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Services.*").Cannot().Create(camadaDataAccess).GetResult());
-                listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Exceptions").Must().Extends("System").GetResult());
-                listaResultados.Add(camadaModels.UseCustomRule(new TypeCannotHaveFunctionsRule()).GetResult());
-                listaResultados = arch.GetResults().ToList();
+                listaResultados.Add(camadaApi.OnlyCan().Depend(camadaApplication).Check());
+                listaResultados.Add(camadaApplication.OnlyCan().Depend(camadaDataAccess).Check());
+                listaResultados.Add(camadaDataAccess.Cannot().Depend(camadaApplication).And().Cannot().Depend(camadaApi).Check());
+                listaResultados.Add(camadaCore.Cannot().Depend(camadaDataAccess).Check());
+                listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Services.*").Cannot().Create(camadaDataAccess).Check());
+                listaResultados.Add(camadaApplication.And().ResideInNamespace("N_Tier.Application.Exceptions").Must().Extends("System").Check());
+                listaResultados.Add(camadaModels.UseCustomRule(new TypeCannotHaveFunctionsRule()).Check());
+                listaResultados = arch.Check().ToList();
                 Console.WriteLine("Results: ");
                 var index = 1;
                 foreach (var item in listaResultados.Where(x => !x.IsSuccessful))

@@ -66,7 +66,7 @@ namespace FluentArch.Arch
             _rules.Add(archRule);
         }
 
-        public IEnumerable<ConditionResult> GetResults()
+        public IEnumerable<ConditionResult> Check()
         {
             var allRusults = _rules.SelectMany(rule => rule.GetResults());
             return allRusults.Where(x => !x.IsSuccessful);

@@ -35,7 +35,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Access(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -65,7 +65,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Cannot().Access(NamespaceTarget).GetResult();
+            var result = layerSource.Cannot().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -106,7 +106,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Access(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -139,7 +139,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.CanOnly().Access(NamespaceTarget).GetResult();
+            var result = layerSource.CanOnly().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -174,7 +174,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Access(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -208,7 +208,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.Must().Access(NamespaceTarget).GetResult();
+            var result = layerSource.Must().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -240,7 +240,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.OnlyCan().Access(NamespaceTarget).GetResult();
+            var result = layerSource.OnlyCan().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
@@ -276,7 +276,7 @@ namespace Test.Rules.DclRules
             #endregion
 
             #region Act
-            var result = layerSource.OnlyCan().Access(NamespaceTarget).GetResult();
+            var result = layerSource.OnlyCan().Access(NamespaceTarget).Check();
             #endregion
 
             #region Assert
