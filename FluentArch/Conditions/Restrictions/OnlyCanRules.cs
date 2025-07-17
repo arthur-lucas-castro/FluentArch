@@ -1,11 +1,11 @@
 ﻿using FluentArch.Arch;
 using FluentArch.Layers;
 using FluentArch.Result;
-using FluentArch.Rules.Interfaces;
-using FluentArch.Rules.Interfaces.Restrictions;
+using FluentArch.Conditions.Interfaces;
+using FluentArch.Conditions.Interfaces.Restrictions;
 using FluentArch.Utils;
 
-namespace FluentArch.Rules.Restrictions
+namespace FluentArch.Conditions.Restrictions
 {
     public class OnlyCanRules : IRestrictions
     {

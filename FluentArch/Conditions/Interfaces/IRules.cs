@@ -1,7 +1,7 @@
 ﻿
-using FluentArch.Rules.Interfaces.Restrictions;
+using FluentArch.Conditions.Interfaces.Restrictions;
 
-namespace FluentArch.Rules.Interfaces
+namespace FluentArch.Conditions.Interfaces
 {
     public interface IRules
     {

@@ -1,10 +1,10 @@
 ﻿using FluentArch.Arch;
 using FluentArch.DTO;
 using FluentArch.Result;
-using FluentArch.Rules.Interfaces;
+using FluentArch.Conditions.Interfaces;
 using System.Data;
 
-namespace FluentArch.Rules
+namespace FluentArch.Conditions
 {
     public class RuleBuilder : IRuleBuilder
     {

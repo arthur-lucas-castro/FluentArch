@@ -1,10 +1,10 @@
 ﻿using FluentArch.DTO;
 using FluentArch.Result;
-using FluentArch.Rules;
+using FluentArch.Conditions;
 using FluentArch.Filters;
-using FluentArch.Rules.Interfaces;
+using FluentArch.Conditions.Interfaces;
 using FluentArch.Arch;
-using FluentArch.Rules.Interfaces.Restrictions;
+using FluentArch.Conditions.Interfaces.Restrictions;
 namespace FluentArch.Layers
 {
     public class Layer : ILayer
@@ -30,14 +30,14 @@ namespace FluentArch.Layers
         }
         public IFilters And()
         {
-            return new RuleFilter(_types.ToList());
+            return new RuleFilters(_types.ToList());
         }
 
         public IRestrictions Must()
         {
             var builder = new RuleBuilder(_types);
             
-            var rule = new Rules.Rules(builder);
+            var rule = new Rules(builder);
 
             return rule.Must();
         }
@@ -45,21 +45,21 @@ namespace FluentArch.Layers
         public IRestrictions CanOnly()
         {
             var builder = new RuleBuilder(_types);
-            var rule = new Rules.Rules(builder);
+            var rule = new Rules(builder);
             return rule.CanOnly();
         }
 
         public IRestrictions Cannot()
         {
             var builder = new RuleBuilder(_types);
-            var rule = new Rules.Rules(builder);
+            var rule = new Rules(builder);
             return rule.Cannot();
         }
 
         public IRestrictions OnlyCan()
         {
             var builder = new RuleBuilder(_types);
-            var rule = new Rules.Rules(builder);
+            var rule = new Rules(builder);
             return rule.OnlyCan();
         }
 

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace FluentArch.Rules.Interfaces
+namespace FluentArch.Conditions.Interfaces
 {
     public interface IDependencyTypes
     {

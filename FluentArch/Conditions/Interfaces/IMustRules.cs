@@ -1,11 +1,8 @@
 ﻿using FluentArch.Layers;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace FluentArch.Rules.Interfaces.Restrictions
+namespace FluentArch.Conditions.Interfaces
 {
-    public interface IRestrictions
+    public interface IMustRules
     {
         IConcatRules Access(string namespacePath);
         IConcatRules Access(ILayer layer);

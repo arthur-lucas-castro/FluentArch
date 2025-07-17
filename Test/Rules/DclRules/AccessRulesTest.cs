@@ -1,5 +1,5 @@
 ﻿using FluentArch.Arch;
-using FluentArch.Rules;
+using FluentArch.Conditions;
 using FluentArch.Layers;
 using Test.ClassHelpers;
 using Test.Helpers;

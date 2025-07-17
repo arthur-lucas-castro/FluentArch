@@ -3,8 +3,8 @@ using FluentArch.DTO;
 using FluentArch.Filters;
 using FluentArch.Layers;
 using FluentArch.Result;
-using FluentArch.Rules;
-using FluentArch.Rules.Interfaces;
+using FluentArch.Conditions;
+using FluentArch.Conditions.Interfaces;
 using Microsoft.CodeAnalysis;
 
 namespace FluentArch.Arch
@@ -42,9 +42,9 @@ namespace FluentArch.Arch
             return _instance._classes;
         }
        
-        public RuleFilter Classes()
+        public RuleFilters Classes()
         {
-            return new RuleFilter(_classes);
+            return new RuleFilters(_classes);
         }
 
         public static Architecture GetInstance()
@@ -58,7 +58,7 @@ namespace FluentArch.Arch
 
         public IFilters All()
         {
-            return new RuleFilter(_classes);
+            return new RuleFilters(_classes);
         }
 
         internal static void AddRule(ArchRule archRule)

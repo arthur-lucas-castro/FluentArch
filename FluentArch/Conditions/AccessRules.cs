@@ -3,7 +3,7 @@ using FluentArch.Layers;
 using FluentArch.Utils;
 using Mapster;
 
-namespace FluentArch.Rules
+namespace FluentArch.Conditions
 {
     public class AccessRules
     {

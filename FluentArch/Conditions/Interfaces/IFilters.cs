@@ -1,7 +1,7 @@
 ﻿using FluentArch.Layers;
 using System.Text.RegularExpressions;
 
-namespace FluentArch.Rules.Interfaces
+namespace FluentArch.Conditions.Interfaces
 {
     public interface IFilters
     {

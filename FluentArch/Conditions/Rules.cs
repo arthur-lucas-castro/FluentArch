@@ -1,10 +1,10 @@
 ﻿using FluentArch.Result;
-using FluentArch.Rules.Interfaces;
-using FluentArch.Rules.Interfaces.Restrictions;
-using FluentArch.Rules.Restrictions;
+using FluentArch.Conditions.Interfaces;
+using FluentArch.Conditions.Interfaces.Restrictions;
+using FluentArch.Conditions.Restrictions;
 
 
-namespace FluentArch.Rules
+namespace FluentArch.Conditions
 {
     public class Rules : IRules, IConcatRules
     {

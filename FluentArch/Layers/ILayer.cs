@@ -1,6 +1,6 @@
 ﻿using FluentArch.DTO;
-using FluentArch.Rules.Interfaces;
-using FluentArch.Rules.Interfaces.Restrictions;
+using FluentArch.Conditions.Interfaces;
+using FluentArch.Conditions.Interfaces.Restrictions;
 
 namespace FluentArch.Layers
 {

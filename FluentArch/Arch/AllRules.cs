@@ -1,4 +1,4 @@
-﻿using FluentArch.Rules;
+﻿using FluentArch.Conditions;
 using System;
 using System.Collections.Generic;
 using System.Text;

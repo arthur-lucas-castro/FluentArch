@@ -1,8 +1,8 @@
 ﻿using FluentArch.Layers;
 
-namespace FluentArch.Rules.Interfaces
+namespace FluentArch.Conditions.Interfaces.Restrictions
 {
-    public interface IOnlyCanRules
+    public interface IRestrictions
     {
         IConcatRules Access(string namespacePath);
         IConcatRules Access(ILayer layer);

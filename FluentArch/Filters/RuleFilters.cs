@@ -1,17 +1,17 @@
 ﻿using FluentArch.Arch;
 using FluentArch.DTO;
 using FluentArch.Layers;
-using FluentArch.Rules.Interfaces;
+using FluentArch.Conditions.Interfaces;
 using FluentArch.Utils;
 using System.Text.RegularExpressions;
 
 namespace FluentArch.Filters
 {
-    public class RuleFilter : IFilters
+    public class RuleFilters : IFilters
     {
         private List<TypeEntityDto> _types;
 
-        public RuleFilter(List<TypeEntityDto> types)
+        public RuleFilters(List<TypeEntityDto> types)
         {
             _types = types;
         }

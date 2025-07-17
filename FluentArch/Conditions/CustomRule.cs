@@ -1,11 +1,11 @@
 ﻿using FluentArch.Arch;
 using FluentArch.DTO;
 using FluentArch.Result;
-using FluentArch.Rules.Interfaces;
+using FluentArch.Conditions.Interfaces;
 using FluentArch.Utils;
 using Mapster;
 
-namespace FluentArch.Rules
+namespace FluentArch.Conditions
 {
     public class CustomRule
     {

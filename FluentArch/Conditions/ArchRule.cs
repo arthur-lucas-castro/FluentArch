@@ -2,7 +2,7 @@
 using FluentArch.DTO;
 using FluentArch.Result;
 
-namespace FluentArch.Rules
+namespace FluentArch.Conditions
 {
     public class ArchRule
     {

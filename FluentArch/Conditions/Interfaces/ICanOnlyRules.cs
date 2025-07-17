@@ -1,6 +1,6 @@
 ﻿using FluentArch.Layers;
 
-namespace FluentArch.Rules.Interfaces
+namespace FluentArch.Conditions.Interfaces
 {
     public interface ICanOnlyRules
     {
