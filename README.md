@@ -1,102 +1,147 @@
-# NomeDoProjeto
 
-Uma API fluente para .NET que permite escrever e verificar suas regras arquiteturais
-## Índice
+# FluentArch
 
-- [Visão Geral](#visão-geral)
-- [Exemplos](#exemplos)
-- [Estrutura das regras](#estrutura)
+**FluentArch** é uma biblioteca para verificação de conformidade arquitetural em projetos C#, baseada no compilador Roslyn. Ela permite que arquitetos definam regras arquiteturais de forma fluente, diretamente sobre o código-fonte, com suporte a regras customizadas, granularidade fina e camadas lógicas reutilizáveis.
 
 ---
 
-## Visão Geral
+## 📌 Visão Geral
 
-Este projeto facilita a aplicação de regras arquiteturais em projetos .NET, utiliza o Roslyn para realizar a analise estatica de codigo e abstrai em uma cadeia de funçoes fluente.
+Projetos C# tendem a sofrer erosão arquitetural ao longo do tempo. FluentArch oferece uma abordagem moderna e flexível para ajudar a detectar e corrigir violações arquiteturais antes que elas impactem a manutenibilidade do sistema.
 
-## Exemplos
+O FluentArch analisa diretamente o código-fonte (.cs), proporcionando:
+
+- Maior precisão na detecção de dependências;
+- Definição de **camadas lógicas**;
+- Escrita de **regras customizadas**;
+- Análise com **granularidade fina**;
+- Reutilização das regras.
+---
+
+## 🧱 Componentes da API
+
+A escrita de regras no FluentArch segue três componentes principais:
+
+### 1. **Filtros**
+Selecionam os elementos a serem analisados. Exemplo:
+```csharp
+arch.All()
+    .ResideInNamespace("MyApp.Services")
+    .HaveNameEndingWith("Service");
 ```
+
+### 2. **Condições**
+Definem as restrições arquiteturais:
+```csharp
+moduloA.Cannot().Depend(moduloB).Check();
+```
+
+### 3. **Conectores**
+Unem filtros e condições, encerrando a regra:
+```csharp
+moduloA.Cannot().Depend(moduloB).And().Cannot().Declare(moduloB).Check();
+```
+
+---
+
+## ✅ Tipos de Regras Arquiteturais
+
+FluentArch suporta os seguintes tipos de verificação:
+
+### 🧩 Divergência
+```csharp
+moduloA.OnlyCan().Depend(moduloB);   // Apenas A pode depender de B  
+moduloA.CanOnly().Depend(moduloB);   // A só pode depender de B  
+moduloA.Cannot().Depend(moduloB);    // A não pode depender de B  
+```
+
+### 🔗 Ausência
+```csharp
+moduloA.Must().Depend(moduloB);      // A deve depender de B
+```
+
+### 🔬 Operadores de Dependência
+Você pode especificar o tipo exato de dependência:
+- `Access` (uso de métodos/atributos)
+- `Declare` (declarações de tipos)
+- `Create` (instanciação)
+- `Extend` (herança)
+- `Implement` (interfaces)
+- `Throw` (exceções)
+- `Handle`, `Derive`, `Depend` (aliases)
+
+---
+
+## 🧠 Regras Customizadas
+
+Crie validações sob medida implementando a interface `ICustomRule`:
+
+```csharp
+public class TypeCannotHaveFunctions : ICustomRule
+{
+    public bool DefineCustomRule(TypeEntityDto type)
+    {
+        return !type.Functions.Any();
+    }
+}
+```
+
+Uso em uma verificação:
+```csharp
+arch.All()
+    .ResideInNamespace("DTOs")
+    .UseCustomRule(new TypeCannotHaveFunctions())
+    .Check();
+```
+
+---
+
+## 🏗️ Camadas Lógicas
+
+Camadas são agrupamentos lógicos reutilizáveis de tipos:
+
+```csharp
+ILayer camadaRepositorio = arch.All()
+    .ResideInNamespace("Repositorios.*")
+    .And()
+    .HaveNameEndingWith("Repositorio");
+```
+
+Essas camadas podem ser reutilizadas em múltiplas regras.
+
+---
+
+## 💡 Exemplo Completo
+
+```csharp
 var arch = Architecture.Build(solution);
 
-ILayer camadaApi = arch.All()
-    .ResideInNamespace("N_Tier.API.*")
-    .As("Api layer");
-ILayer camadaApplication = arch.All()
-    .ResideInNamespace("N_Tier.App.*")
-    .As("App layer");
-ILayer camadaDataAccess = arch.All()
-    .ResideInNamespace("N_Tier.DataAccess.*")
-    .As("DataAccess layer");
-ILayer camadaCore = arch.All()
-    .ResideInNamespace("N_Tier.Core.*")
-    .As("Core layer");
-ILayer camadaShared = arch.All()
-    .ResideInNamespace("N_Tier.Shared.*")
-    .As("Shared layer");
-ILayer camadaModels = arch.All()
-    .ResideInNamespace("N_Tier.App.Models.*")
-    .As("Models layer");
+ILayer camadaApi = arch.All().ResideInNamespace("N_Tier.API.*").As("Api");
+ILayer camadaApp = arch.All().ResideInNamespace("N_Tier.App.*").As("App");
+ILayer camadaData = arch.All().ResideInNamespace("N_Tier.DataAccess.*").As("Data");
+ILayer camadaModels = arch.All().ResideInNamespace("N_Tier.App.Models.*").As("Models");
 
-camadaApi
-    .OnlyCan().Depend(camadaApplication);
-camadaApplication
-    .OnlyCan().Depend(camadaDataAccess);
-camadaDataAccess
-    .Cannot().Depend(camadaApplication)
-    .And()
-    .Cannot().Depend(camadaApi);
-camadaCore
-    .Cannot().Depend(camadaDataAccess);
-arch.All()
-    .Cannot().Create(camadaDataAccess);
-camadaApplication
-    .And().ResideInNamespace("N_Tier.App.Exceptions")
-    .Must().Extends("System");
-camadaModels
-    .UseCustomRule(new TypeCannotHaveFunctionsRule());
+// Regras entre camadas
+camadaApi.OnlyCan().Depend(camadaApp);
+camadaApp.OnlyCan().Depend(camadaData);
+camadaData.Cannot().Depend(camadaApp).And().Cannot().Depend(camadaApi);
 
+// Proibir instanciamento direto de repositórios
+arch.All().Cannot().Create(camadaData);
+
+// Exceptions devem herdar de System.Exception
+camadaApp.And().ResideInNamespace("N_Tier.App.Exceptions")
+          .Must().Extends("System");
+
+// DTOs não devem conter métodos
+camadaModels.UseCustomRule(new TypeCannotHaveFunctions());
+
+// Executar todas as verificações
 var violations = arch.Check();
 ```
 
-O codigo acima verifica 3 regras arquiteturais:
-- Nenhuma classe do sistema deve instanciar objetos de reposi-
-tório; deve-se utilizar injeção de dependência.
-- Todas as classes localizadas na camada Application e no na-
-mespace N_Tier.Application.Exceptions devem herdar
-de Exception.
-• Todas as classes do namespace Models não podem conter
-métodos.
+---
 
+## 🤝 Contribuições
 
-### Estrutura
-
-#### Iniciar
-Para inciar a escrita da regra, é preciso chamar a função `Architecture.Build(solution);` passando uma solution gerada pelo roslyn.
-
-#### Filtros
-Apos inicializar a Architecture, é possivel definir camadas utilizandos os filtros.
--Camadas são agrupamentos de tipo.
-`ILayer camadaApi = arch.All().ResideInNamespace("API.*").As("Api layer");`
-O codigo acima, define uma camada com base no namespace "API" e todos seus sub namespace.
-a função As(string) é opicional, porem é recomendada usar para ter uma mensagem violação arquitetural mais personalizada
-
-#### Condições
-As codiçoes, são de fato as regras a serem seguidas pelo conjunto de tipo defindos pelos filtros e agrupados nas camadas.
-`camadaCore.Cannot().Create(camadaDataAccess);`
-
-A função acima, demonstra a regra de que a camada Core, nao pode criar nenhuma classe da camada de DataAccess. 
-
-
-#### Conectores
-Conectores são os conectorees logicos que permitem a concatenação de filtros e/ou condições.
-`arch.All().ResideInNamespace("App.*").And().HaveNameEndingWith("Controller").Cannot().Create(camadaDataAccess).And().Must().Create("Service.*");`
-
-o codigo acima apresenta o uso do conector logico And(), tanto nos filtros para ter uma camada mais restrita, quanto na condição, de modo que tenha mais de uma regra sendo aplicada.
-
-#### Resultados
-
-Para extrair os resultados, foi disponibilizado duas opções:
-`arch.Check()`
-para obter o resultado de todas as regras daquela arquitetura.
-
-`camadaCore.Cannot().Create(camadaDataAccess).Check();`
-Para obter o resultado somente da regra especifica.
+Pull requests são bem-vindos! Consulte o guia de contribuição no repositório oficial para colaborar com o FluentArch.
