@@ -15,7 +15,6 @@ namespace FluentArch.ASTs
 {
     public static class FunctionVisitor
     {
-        //TODO: traduzir para ingles
         public static FunctionEntityDto VisitarFuncao(MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
             var functionDto = new FunctionEntityDto();
@@ -36,7 +35,7 @@ namespace FluentArch.ASTs
             functionDto.Access.AddRange(PreencherAcessos(method, semanticModel));
             functionDto.Creations.AddRange(PreencherCriacoes(method, semanticModel));
             functionDto.Throws.AddRange(PreencherLancamentos(method, semanticModel));
-            //EntityDto retornoEntity = PreencherRetornos(method, semanticModel, symbol);
+            functionDto.ReturnTypes = PreencherRetornos(method, semanticModel);
 
             functionDto.AccessibilityLevel = method.Modifiers.Where(mod => mod.IsKind(SyntaxKind.PublicKeyword) ||
                               mod.IsKind(SyntaxKind.PrivateKeyword) ||
@@ -50,19 +49,57 @@ namespace FluentArch.ASTs
         //TODO: Fazer caso do retorno, considerar dictionarys e mais de um retonor (typoe1, type2)
         private static List<EntityDto> PreencherRetornos(MethodDeclarationSyntax method, SemanticModel semanticModel)
         {
-            var retorno = method.ReturnType;
-            var symbol = semanticModel.GetDeclaredSymbol(retorno);
+            var methodSymbol = semanticModel.GetDeclaredSymbol(method) as IMethodSymbol;
+
             var listaRetornos = new List<EntityDto>();
-            if (symbol is IParameterSymbol parameterSymbol)
+            if (methodSymbol?.ReturnType is INamedTypeSymbol namedType)
             {
+                if (namedType.IsTupleType)
+                {
+                    foreach (var tupleType in namedType.TupleElements)
+                    {
+                        if(VisitorUtils.EhTipoPrimitivo(tupleType.Type.Name) || VisitorUtils.EhTipoPrimitivo(tupleType.Type.ToString()))
+                        {
+                            continue;
+                        }
+                        listaRetornos.Add(new EntityDto
+                        {
+                            Name = tupleType.Type.Name,
+                            Namespace = tupleType.Type.ContainingNamespace.ToString(),
+                            Location = FormatarStringUtils.FormatarLocalizacaoLinha(method.GetLocation())
+                        });
+                    }
+                    return listaRetornos;
+                }
+                if (namedType.IsGenericType)
+                {
+                    foreach (var types in namedType.TypeArguments)
+                    {
+                        if (VisitorUtils.EhTipoPrimitivo(types.Name))
+                        {
+                            continue;
+                        }
+                        listaRetornos.Add(new EntityDto
+                        {
+                            Name = types.Name,
+                            Namespace = types.ContainingNamespace.ToString(),
+                            Location = FormatarStringUtils.FormatarLocalizacaoLinha(method.GetLocation())
+                        });
+                    }
+                    return listaRetornos;
+                }
+                if (VisitorUtils.EhTipoPrimitivo(namedType.Name))
+                {
+                    return listaRetornos;
+                }
                 listaRetornos.Add(new EntityDto
                 {
-                    Name = parameterSymbol.Name,
-                    Namespace = parameterSymbol.Type.ContainingNamespace.ToString(),
-                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(retorno.GetLocation())
+                    Name = namedType.Name,
+                    Namespace = namedType.ContainingNamespace.ToString(),
+                    Location = FormatarStringUtils.FormatarLocalizacaoLinha(method.GetLocation())
                 });
+               
             }
-
             return listaRetornos;
         }
 

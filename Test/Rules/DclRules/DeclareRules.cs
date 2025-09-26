@@ -15,6 +15,12 @@ namespace Test.Rules.DclRules
         private const string NamespaceSource = "Project.NamespaceSource";
         private const string NamespaceTarget = "Project.NamespaceTarget";
 
+        public DeclareRules()
+        {
+            Architecture.Reset();
+        }
+
+
         [Fact]
         public void DeclareRules_CannnotDeclareLocalTypesTargetClass_RuleIsNotValid()
         {
@@ -215,5 +221,75 @@ namespace Test.Rules.DclRules
             Assert.True(result.IsSuccessful && !result.Violations.Any());
             #endregion
         }
+
+        [Fact]
+        public void DeclareRules_OnlySourceClassCanDeclareTargetClass_RuleIsValid()
+        {
+            #region Arrange
+            var listaDeclaracoes = new List<ClassAndNamespace>
+            {
+                new ClassAndNamespace
+                {
+                    Name = NameOfTargetClass,
+                    NamespacePath = NamespaceTarget,
+                }
+            };
+
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
+            var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
+
+            var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
+
+            var layerSource = arch.All().ResideInNamespace(NamespaceSource);
+            #endregion
+
+            #region Act
+            var result = layerSource.OnlyCan().Declare(NamespaceTarget).Check();
+            #endregion
+
+            #region Assert
+            Assert.True(result.IsSuccessful && !result.Violations.Any());
+            #endregion
+        }
+
+        [Fact]
+        public void DeclareRules_OnlySourceClassCanDeclareTargetClass_RuleIsNotValid()
+        {
+            #region Arrange
+            var namespaceOther = "Project.NamespaceOther";
+            var nameOtherClass = "OtherClass";
+            var listaDeclaracoes = new List<ClassAndNamespace>
+            {
+                new ClassAndNamespace
+                {
+                    Name = NameOfTargetClass,
+                    NamespacePath = NamespaceTarget,
+                },
+                new ClassAndNamespace
+                {
+                    Name = nameOtherClass,
+                    NamespacePath = namespaceOther,
+                }
+            };
+
+            var classSource = ClasseSourceHelper.ClassSourceWithLocalTypes(NamespaceSource, listaDeclaracoes);
+            var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
+            var classOther = Classes.ClassCreateClasses(namespaceOther, listaDeclaracoes, nameOtherClass);
+
+            var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget, classOther }));
+
+            var layerSource = arch.All().ResideInNamespace(NamespaceSource);
+            #endregion
+
+            #region Act
+            var result = layerSource.OnlyCan().Declare(NamespaceTarget).Check();
+            #endregion
+
+            #region Assert
+            Assert.True(!result.IsSuccessful && result.Violations.Any());
+            #endregion
+        }
     }
 }
+
+

@@ -44,6 +44,37 @@ namespace Test.ClassHelpers
             return code;
         }
 
+        public static string ClassSourceReturnClasses(string namespaceSource, List<ClassAndNamespace> classesToReturn)
+        {
+
+            var body = "";
+
+            var usigns = "";
+
+            foreach (var classAndNamespace in classesToReturn)
+            {
+                usigns += @$"
+                    using {classAndNamespace.NamespacePath};";
+            }
+
+            string code = @$"
+                using System;
+                {usigns};
+
+                namespace {namespaceSource}
+                {{
+                    public class ClassSource
+                    {{
+                        public async Task<{classesToReturn.First().Name}> MethodForTest()
+                        {{
+                            return new {classesToReturn.First().Name}();
+                        }}
+                    }}
+                }}";
+
+            return code;
+        }
+
         public static string ClassSourceAccessMethodOfClasses(string namespaceSource, List<ClassAndNamespace> classesToAccess)
         {
 
@@ -274,5 +305,31 @@ namespace Test.ClassHelpers
 
             return code;
         }
+        public static string ClassSourceImplementsInterfaces(string namespaceSource, List<ClassAndNamespace> interfacesToImplement)
+        {
+            var usings = "";
+            var interfaces = "";
+
+            if (interfacesToImplement.Any())
+            {
+                usings = string.Join(Environment.NewLine, interfacesToImplement.Select(i => $"using {i.NamespacePath};"));
+                interfaces = " : " + string.Join(", ", interfacesToImplement.Select(i => i.Name));
+            }
+
+            string code = $@"
+                using System;
+                {usings}
+
+                namespace {namespaceSource}
+                {{
+                    public class ClassSource{interfaces}
+                    {{
+                    }}
+                }}";
+
+            return code;
+        }
+
+
     }
 }

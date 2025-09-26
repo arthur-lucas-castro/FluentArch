@@ -9,10 +9,7 @@ namespace FluentArch.Conditions
     {
         private string _dependecyType = "Access";
         public AccessRules() { }
-        public AccessRules(string dependecyType)
-        {
-            _dependecyType = dependecyType;
-        }
+
         public List<ViolationDto> CannotAccess(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());

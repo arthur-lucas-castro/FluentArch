@@ -1,6 +1,7 @@
 ﻿using FluentArch.Arch;
 using FluentArch.Conditions;
 using FluentArch.Layers;
+using Moq;
 using Test.ClassHelpers;
 using Test.Helpers;
 
@@ -11,6 +12,11 @@ namespace Test.Rules.DclRules
         private const string NameOfTargetClass = "TargetClass";
         private const string NamespaceSource = "Project.NamespaceSource";
         private const string NamespaceTarget = "Project.NamespaceTarget";
+
+        public AccessRulesTest()
+        {
+            Architecture.Reset();
+        }
 
         [Fact]
         public void AccessRules_CannnotAccessTargetClass_RuleIsNotValid()
@@ -29,6 +35,8 @@ namespace Test.Rules.DclRules
             var classTarget = Classes.GetClassWithOneMethod(NamespaceTarget);
 
             var arch = Architecture.Build(SolutionHelper.MontarSolution(new List<string> { classSource, classTarget }));
+
+
 
             var layerTarget = arch.All().ResideInNamespace(NamespaceTarget);
             var layerSource = arch.All().ResideInNamespace(NamespaceSource);
@@ -251,6 +259,7 @@ namespace Test.Rules.DclRules
         [Fact]
         public void AccessRules_OnlySourceClassCanAccessTargetClass_RuleIsNotValid()
         {
+            
             #region Arrange
             var namespaceBaseClass = "Project.NamespaceBaseClass";
             var nameBaseClass = "BaseClass";
@@ -283,5 +292,7 @@ namespace Test.Rules.DclRules
             Assert.True(!result.IsSuccessful && result.Violations.Any());
             #endregion
         }
+
+
     }
 }

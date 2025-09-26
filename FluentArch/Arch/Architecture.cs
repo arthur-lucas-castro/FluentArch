@@ -12,7 +12,7 @@ namespace FluentArch.Arch
     public  class Architecture
     {
         private static Architecture? _instance;
-        private List<TypeEntityDto> _classes = new();
+        private List<TypeEntityDto> _types = new();
 
         private static List<ArchRule> _rules = new();
         private Architecture(Solution solution) 
@@ -21,8 +21,13 @@ namespace FluentArch.Arch
 
             foreach (var project in solution.Projects)
             {
-                _classes.AddRange(classVisitor.ObterDadosDasClasses(project));
+                _types.AddRange(classVisitor.ObterDadosDasClasses(project));
             }
+        }
+        public static void Reset()
+        {
+            _instance = null;
+            _rules.Clear();
         }
         public static Architecture Build(Solution solution)
         {
@@ -39,12 +44,12 @@ namespace FluentArch.Arch
             {
                 return new List<TypeEntityDto>();
             }
-            return _instance._classes;
+            return _instance._types;
         }
        
         public RuleFilters Classes()
         {
-            return new RuleFilters(_classes);
+            return new RuleFilters(_types);
         }
 
         public static Architecture GetInstance()
@@ -58,7 +63,7 @@ namespace FluentArch.Arch
 
         public IFilters All()
         {
-            return new RuleFilters(_classes);
+            return new RuleFilters(_types);
         }
 
         internal static void AddRule(ArchRule archRule)

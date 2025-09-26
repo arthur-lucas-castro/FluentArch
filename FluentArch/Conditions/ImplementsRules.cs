@@ -9,10 +9,7 @@ namespace FluentArch.Conditions
     {
         private string _dependecyType = "Implements";
         public ImplementsRules() { }
-        public ImplementsRules(string dependecyType)
-        {
-            _dependecyType = dependecyType;
-        }
+
         public List<ViolationDto> CannotImplements(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());

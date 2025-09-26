@@ -170,5 +170,34 @@ namespace Test.ASTs
             Assert.True(tipoLocal.Namespace.Equals(resultadoEsperado.Namespace) && tipoLocal.Name.Equals(resultadoEsperado.Name));
 
         }
+        [Fact]
+        public void FunctionVisitor_ReturnTypeOfTargetClass_Success()
+        {
+            var listaLancamentos = new List<ClassAndNamespace>
+            {
+                new ClassAndNamespace
+                {
+                    Name = NameOfTargetClass,
+                    NamespacePath = NamespaceTarget,
+                }
+            };
+            var classSource = ClasseSourceHelper.ClassSourceReturnClasses(NamespaceSource, listaLancamentos);
+            var targetClass = Classes.GetClassWithOneMethod(NamespaceTarget);
+
+            var solution = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
+
+            var resultadoEsperado = new EntityDto { Name = NameOfTargetClass, Namespace = NamespaceTarget };
+
+
+            var dadosClasse = SolutionHelper.ObterDadosDaClasse(new List<string> { classSource, targetClass });
+
+            var classeSource = dadosClasse.FirstOrDefault(c => c.Namespace.Equals(NamespaceSource));
+
+            var tipoRetornado = classeSource!.Functions.SelectMany(x => x.ReturnTypes).FirstOrDefault();
+
+
+            Assert.True(tipoRetornado.Namespace.Equals(resultadoEsperado.Namespace) && tipoRetornado.Name.Equals(resultadoEsperado.Name));
+
+        }
     }
 }

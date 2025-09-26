@@ -11,7 +11,8 @@ namespace FluentArch.Utils
             //TODO: Criar exclusionList
             var tipoPrimitivo = new HashSet<string>
             {
-                "int", "int32", "String", "string", "float", "double", "decimal", "bool", "char", "byte", "short", "long", "object", "var", "string[]", "byte[]"
+                "int", "int32", "String", "string", "float", "double", 
+                "decimal", "bool", "char", "byte", "short", "long", "object", "var", "string[]", "byte[]", "Void"
             };
             return tipoPrimitivo.Contains(tipo);
         }

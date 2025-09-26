@@ -24,6 +24,46 @@ namespace Test.ClassHelpers
 
             return code;
         }
+        public static string ClassCreateClasses(string namespacePath, List<ClassAndNamespace> classesToCreate, string className = "TargetClass")
+        {
+
+            var body = "";
+
+            var usigns = "";
+
+            foreach (var classAndNamespace in classesToCreate)
+            {
+                usigns += @$"
+                    using {classAndNamespace.NamespacePath};";
+                body += @$"
+
+                    var classCreate{classAndNamespace.Name} = new {classAndNamespace.Name}();
+                ";
+
+            }
+
+            string code = @$"
+                using System;
+                {usigns};
+
+                namespace {namespacePath}
+                {{
+                    public class {className}
+                    {{
+                        public static void MethodForTest()
+                        {{
+                            {body}
+                        }}
+                    }}
+                }}";
+
+            return code;
+        }
+
+        public static string ClassSourceWithLocalTypes(string namespacePath, List<ClassAndNamespace> localTypesToAdd, string className = "TargetClass")
+        {
+            return ClassCreateClasses(namespacePath, localTypesToAdd, className);
+        }
         public static string ClassAccessMethodOfClasses(string namespaceSource, string classNameSource, List<ClassAndNamespace> classesToAccess)
         {
 
@@ -103,5 +143,51 @@ namespace Test.ClassHelpers
 
             return code;
         }
+        public static string GetInterface(string namespacePath, string interfaceName)
+        {
+            return $@"
+                namespace {namespacePath}
+                {{
+                    public interface {interfaceName}
+                    {{
+                    }}
+                }}";
+        }
+        public static string GetException(string namespacePath, string exceptionName)
+        {
+            return $@"
+                namespace {namespacePath}
+                {{
+                    public class {exceptionName} : System.Exception
+                    {{
+                        public {exceptionName}() : base() {{ }}
+                    }}
+                }}";
+        }
+        public static string ClassImplementsInterfaces(string namespacePath, List<ClassAndNamespace> interfacesToImplement)
+        {
+            var usings = "";
+            var interfaces = "";
+
+            if (interfacesToImplement.Any())
+            {
+                usings = string.Join(Environment.NewLine, interfacesToImplement.Select(i => $"using {i.NamespacePath};"));
+                interfaces = " : " + string.Join(", ", interfacesToImplement.Select(i => i.Name));
+            }
+
+            string code = @$"
+                using System;
+                {usings}
+
+                    namespace {namespacePath}
+                    {{
+                         public class Class{interfaces}
+                        {{
+                        }}
+                    }}";
+
+            return code;
+        }
+
     }
 }

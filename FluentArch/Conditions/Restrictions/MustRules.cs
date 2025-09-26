@@ -29,17 +29,12 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Access(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _accessRules.MustAccess(_builder.GetTypes(), layer);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Access(layerTarget);
         }
-        public IConcatRules Access(ILayer layer)
+        public IConcatRules Access(ILayer layerTarget)
         {
-            var violations = _accessRules.MustAccess(_builder.GetTypes(), layer);
+            var violations = _accessRules.MustAccess(_builder.GetTypes(), layerTarget);
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -47,17 +42,12 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Declare(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _declareRules.MustDeclare(_builder.GetTypes(), layer);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Declare(layerTarget);
         }
-        public IConcatRules Declare(ILayer layer)
+        public IConcatRules Declare(ILayer layerTarget)
         {
-            var violations = _declareRules.MustDeclare(_builder.GetTypes(), layer);
+            var violations = _declareRules.MustDeclare(_builder.GetTypes(), layerTarget);
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -66,12 +56,7 @@ namespace FluentArch.Conditions.Restrictions
         public IConcatRules Create(string namespacePath)
         {
             var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _createRules.MustCreate(_builder.GetTypes(), layerTarget);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            return Create(layerTarget);
         }
         public IConcatRules Create(ILayer layerTarget)
         {
@@ -83,16 +68,12 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Extends(string namespacePath)
         {
- 
-            var violations = _extendsRules.MustExtends(_builder.GetTypes(), namespacePath);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Extends(layerTarget);
         }
-        public IConcatRules Extends(ILayer layer)
+        public IConcatRules Extends(ILayer layerTarget)
         {
-            var violations = _extendsRules.MustExtends(_builder.GetTypes(), layer);
+            var violations = _extendsRules.MustExtends(_builder.GetTypes(), layerTarget);
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -100,17 +81,12 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Implements(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _implementsRules.MustImplements(_builder.GetTypes(), layer);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Implements(layerTarget);
         }
-        public IConcatRules Implements(ILayer layer)
+        public IConcatRules Implements(ILayer layerTarget)
         {
-            var violations = _implementsRules.MustImplements(_builder.GetTypes(), layer);
+            var violations = _implementsRules.MustImplements(_builder.GetTypes(), layerTarget);
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -118,17 +94,12 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Throws(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _throwRules.MustThrow(_builder.GetTypes(), layer);
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Throws(layerTarget);
         }
-        public IConcatRules Throws(ILayer layer)
+        public IConcatRules Throws(ILayer layerTarget)
         {
-            var violations = _throwRules.MustThrow(_builder.GetTypes(), layer);
+            var violations = _throwRules.MustThrow(_builder.GetTypes(), layerTarget);
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -137,22 +108,15 @@ namespace FluentArch.Conditions.Restrictions
 
         public IConcatRules Handle(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _accessRules.MustAccess(_builder.GetTypes(), layer);
-
-            violations.AddRange(_declareRules.MustDeclare(_builder.GetTypes(), layer));
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Handle(layerTarget);
         }
 
-        public IConcatRules Handle(ILayer layer)
+        public IConcatRules Handle(ILayer layerTarget)
         {
-            var violations = _accessRules.MustAccess(_builder.GetTypes(), layer);
+            var violations = _accessRules.MustAccess(_builder.GetTypes(), layerTarget);
 
-            violations.AddRange(_declareRules.MustDeclare(_builder.GetTypes(), layer));
+            violations.AddRange(_declareRules.MustDeclare(_builder.GetTypes(), layerTarget));
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -161,22 +125,15 @@ namespace FluentArch.Conditions.Restrictions
 
         public IConcatRules Derive(string namespacePath)
         {
-            var layer = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _extendsRules.MustExtends(_builder.GetTypes(), namespacePath);
-
-            violations.AddRange(_implementsRules.MustImplements(_builder.GetTypes(), layer));
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            return Derive(layerTarget);
         }
 
-        public IConcatRules Derive(ILayer layer)
+        public IConcatRules Derive(ILayer layerTarget)
         {
-            var violations = _extendsRules.MustExtends(_builder.GetTypes(), layer);
+            var violations = _extendsRules.MustExtends(_builder.GetTypes(), layerTarget);
 
-            violations.AddRange(_implementsRules.MustImplements(_builder.GetTypes(), layer));
+            violations.AddRange(_implementsRules.MustImplements(_builder.GetTypes(), layerTarget));
 
             _builder.AddResults(new ConditionResult(!violations.Any(), violations));
 
@@ -186,17 +143,7 @@ namespace FluentArch.Conditions.Restrictions
         public IConcatRules Depend(string namespacePath)
         {
             var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
-
-            var violations = _accessRules.MustAccess(_builder.GetTypes(), layerTarget);
-            violations.AddRange(_declareRules.MustDeclare(_builder.GetTypes(), layerTarget));
-            violations.AddRange(_createRules.MustCreate(_builder.GetTypes(), layerTarget));
-            violations.AddRange(_extendsRules.MustExtends(_builder.GetTypes(), namespacePath));
-            violations.AddRange(_implementsRules.MustImplements(_builder.GetTypes(), layerTarget));
-            violations.AddRange(_throwRules.MustThrow(_builder.GetTypes(), layerTarget));
-
-            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
-
-            return new Rules(_builder);
+            return Depend(layerTarget);
         }
 
         public IConcatRules Depend(ILayer layerTarget)

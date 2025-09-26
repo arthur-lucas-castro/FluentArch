@@ -11,7 +11,7 @@ namespace FluentArch.ASTs
 
         public List<TypeEntityDto> ObterDadosDasClasses(Project project)
         {
-            var dadosClasse = new List<TypeEntityDto>();
+            var dadosType = new List<TypeEntityDto>();
             var compilation = project.GetCompilationAsync().Result;
 
             var trees = compilation!.SyntaxTrees.Where(st => (!st.FilePath.Contains(@"\obj\")));
@@ -20,7 +20,6 @@ namespace FluentArch.ASTs
             {
                 var semanticModel = compilation.GetSemanticModel(tree);
                 var classes = tree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>();
-                //TODO: Analisar interfaces
                 foreach (var classDeclaration in classes)
                 {
                     var classeAnalisada = new TypeEntityDto();
@@ -36,11 +35,25 @@ namespace FluentArch.ASTs
                     PreencherBase(classDeclaration, classeAnalisada, semanticModel);
                     PreencherAtributosDaClasse(classDeclaration, classeAnalisada, semanticModel);
                     PreencherFuncoes(classDeclaration, classeAnalisada, semanticModel);
-                    dadosClasse.Add(classeAnalisada);
+                    dadosType.Add(classeAnalisada);
+                }
+                var interfaces = tree.GetRoot().DescendantNodes().OfType<InterfaceDeclarationSyntax>();
+                foreach (var interfaceDeclaration in interfaces)
+                {
+                    var interfaceAnalisada = new TypeEntityDto();
+                    interfaceAnalisada.Name = interfaceDeclaration.Identifier.Text;
+                    interfaceAnalisada.Location = FormatarStringUtils.FormatarLocalizacaoLinha(interfaceDeclaration.GetLocation());
+                    interfaceAnalisada.IsInterface = true;
+                    var symbol = semanticModel.GetDeclaredSymbol(interfaceDeclaration);
+                    if (symbol is INamedTypeSymbol namedTypeSymbol)
+                    {
+                        interfaceAnalisada.Namespace = symbol.ContainingNamespace.ToString();
+                    }
+                    dadosType.Add(interfaceAnalisada);
                 }
             }
 
-            return dadosClasse;
+            return dadosType;
         }
         private static void PreencherBase(ClassDeclarationSyntax classDeclaration, TypeEntityDto dadosDaClasse, SemanticModel semanticModel)
         {

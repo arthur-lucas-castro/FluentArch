@@ -9,10 +9,7 @@ namespace FluentArch.Conditions
     {
         private string _dependecyType = "Declare";
         public DeclareRules() { }
-        public DeclareRules(string dependecyType)
-        {
-            _dependecyType = dependecyType;
-        }
+
         public List<ViolationDto> CannotDeclare(List<TypeEntityDto> types, ILayer layer)
         {
             var todasEntityDto = layer.GetTypes().Select(x => x.Adapt<EntityDto>());
@@ -129,6 +126,8 @@ namespace FluentArch.Conditions
             todasDeclaracoes.AddRange(type.Functions.SelectMany(funcao => funcao.Parameters));
             todasDeclaracoes.AddRange(type.Properties);
             todasDeclaracoes.AddRange(type.Functions.SelectMany(funcao => funcao.LocalTypes));
+            todasDeclaracoes.AddRange(type.Functions.SelectMany(funcao => funcao.ReturnTypes));
+            
 
             return todasDeclaracoes;
         }

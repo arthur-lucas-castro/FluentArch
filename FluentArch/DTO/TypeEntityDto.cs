@@ -8,6 +8,7 @@ namespace FluentArch.DTO
 {
     public class TypeEntityDto : EntityDto
     {
+        public bool IsInterface { get; set; } = false;
         public List<FunctionEntityDto> Functions { get; set; } = new List<FunctionEntityDto>();
         public List<EntityDto> Properties { get; set; } = new List<EntityDto>();
         public EntityDto? Inheritance { get; set; }

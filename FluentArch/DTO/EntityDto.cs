@@ -11,5 +11,7 @@ namespace FluentArch.DTO
         public string Name { get; set; } = string.Empty;
         public string Namespace { get; set; } = string.Empty;
         public string Location { get; set; } = string.Empty;
+        public string FullName => string.IsNullOrEmpty(Namespace) ? Name : $"{Namespace}.{Name}";
+
     }
 }
