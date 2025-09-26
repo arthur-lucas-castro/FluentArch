@@ -49,7 +49,7 @@ namespace FluentArch.Conditions
             {
                 var todasInterfaces = types.SelectMany(classe => classe.Interfaces);
 
-                var interfacesQueViolamRegra = todasInterfaces.Where(interfaceAnalisada => !interfaceAnalisada.CompareClassAndNamespace(todasEntityDto));
+                var interfacesQueViolamRegra = todasInterfaces.Where(interfaceAnalisada => !interfaceAnalisada.CompareClassAndNamespace(todasEntityDto) && !interfaceAnalisada.Namespace.Contains("System"));
 
                 if (!interfacesQueViolamRegra.Any())
                 {

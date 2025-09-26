@@ -46,7 +46,7 @@ namespace FluentArch.Conditions
             {
                 var todosAcessos = type.Functions.SelectMany(f => f.Access);
 
-                var acessosQueViolamRegra = todosAcessos.Where(criacao => !criacao.CompareClassAndNamespace(todasEntityDto));
+                var acessosQueViolamRegra = todosAcessos.Where(acesso => !acesso.CompareClassAndNamespace(todasEntityDto) && !acesso.Namespace.Contains("System"));
                 if (!acessosQueViolamRegra.Any())
                 {
                     continue;

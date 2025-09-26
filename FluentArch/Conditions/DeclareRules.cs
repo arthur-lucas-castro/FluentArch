@@ -46,7 +46,7 @@ namespace FluentArch.Conditions
             {
                 var todasDeclaracoes = ObterTodasDeclaracoes(type);
 
-                var declaracoesQueQuebramRegra = todasDeclaracoes.Where(declaracao => !declaracao.CompareClassAndNamespace(todasEntityDto));
+                var declaracoesQueQuebramRegra = todasDeclaracoes.Where(declaracao => !declaracao.CompareClassAndNamespace(todasEntityDto) && !declaracao.Namespace.Contains("System"));
                 if (!declaracoesQueQuebramRegra.Any())
                 {
                     continue;
