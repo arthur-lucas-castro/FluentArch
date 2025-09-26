@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Example": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\arthu\\source\\repos\\N-Tier-Architecture\\N-Tier.sln"
+    }
+  }
+}
