@@ -43,6 +43,35 @@ namespace FluentArch.Conditions
 
             return violacoes;
         }
+        public List<ViolationDto> CannotExtends(IEnumerable<TypeEntityDto> types, string fullName)
+        {
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                if (type.Inheritance is null)
+                {
+                    continue;
+                }
+
+                var typeHerdaTarget = type.Inheritance.FullName.NamespaceCompare(fullName);
+
+                if (!typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = new List<EntityDto> { type.Inheritance },
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CANNOT_DESCRIPTION, [_dependecyType, fullName, type.Name])
+                    });
+            }
+
+            return violacoes;
+        }
 
         public List<ViolationDto> ExtendsOnly(IEnumerable<TypeEntityDto> types, ILayer layer)
         {
@@ -70,6 +99,35 @@ namespace FluentArch.Conditions
                         ClassThatVioletesRule = type.Name,
                         Violations = new List<EntityDto> { type.Inheritance },
                         ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
+                    });
+            }
+
+            return violacoes;
+        }
+        public List<ViolationDto> ExtendsOnly(IEnumerable<TypeEntityDto> types, string fullName)
+        {
+            var violacoes = new List<ViolationDto>();
+
+            foreach (var type in types)
+            {
+                if (type.Inheritance is null)
+                {
+                    continue;
+                }
+
+                var typeHerdaTarget = type.Inheritance.FullName.NamespaceCompare(fullName);
+
+                if (typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = new List<EntityDto> { type.Inheritance },
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_CAN_ONLY_DESCRIPTION, [_dependecyType, fullName, type.Name])
                     });
             }
 
@@ -122,7 +180,7 @@ namespace FluentArch.Conditions
                     continue;
                 }
 
-                var typeHerdaTarget = type.Inheritance.Namespace.NamespaceCompare(namespacePath);
+                var typeHerdaTarget = type.Inheritance.FullName.NamespaceCompare(namespacePath);
 
                 if (typeHerdaTarget)
                 {
@@ -167,6 +225,35 @@ namespace FluentArch.Conditions
                         ClassThatVioletesRule = type.Name,
                         Violations = new List<EntityDto> { type.Inheritance },
                         ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_ONLY_CAN_DESCRIPTION, [_dependecyType, layer.GetName(), type.Name])
+                    });
+            }
+
+            return violacoes;
+        }
+        public List<ViolationDto> OnlyCanExtends(IEnumerable<TypeEntityDto> types, string namespacePath)
+        {
+
+            var violacoes = new List<ViolationDto>();
+            foreach (var type in types)
+            {
+                if (type.Inheritance is null)
+                {
+                    continue;
+                }
+
+                var typeHerdaTarget = type.Inheritance.FullName.NamespaceCompare(namespacePath);
+
+                if (!typeHerdaTarget)
+                {
+                    continue;
+                }
+
+                violacoes.Add(
+                    new ViolationDto
+                    {
+                        ClassThatVioletesRule = type.Name,
+                        Violations = new List<EntityDto> { type.Inheritance },
+                        ViolationReason = ErrorDescriptionFormarter.FormatarErrorDescription(ErrorReasons.ERROR_ONLY_CAN_DESCRIPTION, [_dependecyType, namespacePath, type.Name])
                     });
             }
 

@@ -3,6 +3,7 @@ using FluentArch.Layers;
 using FluentArch.Result;
 using FluentArch.Conditions.Interfaces;
 using FluentArch.Conditions.Interfaces.Restrictions;
+using System.Linq.Expressions;
 
 namespace FluentArch.Conditions.Restrictions
 {
@@ -69,9 +70,11 @@ namespace FluentArch.Conditions.Restrictions
         }
         public IConcatRules Extends(string namespacePath)
         {
-            var layerTarget = Architecture.GetInstance().Classes().ResideInNamespace(namespacePath).As(namespacePath);
+            var violations = _extendsRules.CannotExtends(_builder.GetTypes(), namespacePath);
 
-            return Extends(layerTarget);
+            _builder.AddResults(new ConditionResult(!violations.Any(), violations));
+
+            return new Rules(_builder);
         }
         public IConcatRules Extends(ILayer layerTarget)
         {
