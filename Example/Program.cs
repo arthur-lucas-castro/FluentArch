@@ -42,15 +42,14 @@ namespace TCC
                 ILayer camadaShared = arch.All().ResideInNamespace("N_Tier.Shared.*").As("Shared layer");
                 ILayer camadaModels = arch.All().ResideInNamespace("N_Tier.Application.Models.*").As("Models layer");
 
-                var listaResultados = new List<ConditionResult>();
-                var teste = camadaApi.And(camadaUnitTest).And(camadaIntegrationTest).OnlyCan().Depend(camadaApplication).Check();
-                var teste2 = camadaApplication.OnlyCan().Depend(camadaDataAccess).Check();
-                var teste3 = camadaDataAccess.Cannot().Depend(camadaApplication).And().Cannot().Depend(camadaApi).Check();
-                var teste4 = camadaCore.Cannot().Depend(camadaDataAccess).Check();
-                var teste5 = camadaApplication.And().ResideInNamespace("N_Tier.Application.Services.*").Cannot().Create(camadaDataAccess).Check();
-                //camadaApplication.And().ResideInNamespace("N_Tier.Application.Exceptions").Must().Extends("System.Exceptions").Check();
+                camadaApi.And(camadaUnitTest).And(camadaIntegrationTest).OnlyCan().Depend(camadaApplication);
+                camadaApplication.OnlyCan().Depend(camadaDataAccess);
+                camadaDataAccess.Cannot().Depend(camadaApplication).And().Cannot().Depend(camadaApi);
+                camadaCore.Cannot().Depend(camadaDataAccess);
+                camadaApplication.And().ResideInNamespace("N_Tier.Application.Services.*").Cannot().Create(camadaDataAccess);
+                camadaApplication.And().ResideInNamespace("N_Tier.Application.Exceptions").Must().Extends("System.Exception");
                 camadaModels.UseCustomRule(new TypeCannotHaveFunctionsRule()).Check();
-                listaResultados = arch.Check().ToList();
+                var listaResultados = arch.Check().ToList();
 
                 Console.WriteLine("Results: ");
                 var index = 1;
