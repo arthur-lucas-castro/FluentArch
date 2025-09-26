@@ -227,10 +227,31 @@ namespace FluentArch.ASTs
 
                 if (declaredSymbol is ILocalSymbol localSymbol)
                 {
+                    
+                    if (localSymbol.Type is INamedTypeSymbol typeSymbol && typeSymbol.IsGenericType)
+                    {
+                        var types = typeSymbol.TypeArguments;
+                        foreach (var type in types)
+                        {
+                            if (VisitorUtils.EhTipoPrimitivo(localSymbol.Type.Name) || VisitorUtils.EhTipoPrimitivo(localSymbol.Type.ToString()))
+                            {
+                                continue;
+                            }
+                            listaDeclaracoes.Add(new EntityDto
+                            {
+                                Name = type.Name,
+                                Namespace = type.ContainingNamespace is null ? string.Empty : type.ContainingNamespace.ToString(),
+                                Location = FormatarStringUtils.FormatarLocalizacaoLinha(variableDeclaration.GetLocation())
+                            });
+
+                        }
+                        continue;
+                    }
                     if (VisitorUtils.EhTipoPrimitivo(localSymbol.Type.Name) || VisitorUtils.EhTipoPrimitivo(localSymbol.Type.ToString()))
                     {
                         continue;
                     }
+
 
                     listaDeclaracoes.Add(new EntityDto
                     {

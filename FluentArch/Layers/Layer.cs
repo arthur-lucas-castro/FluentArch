@@ -32,6 +32,13 @@ namespace FluentArch.Layers
         {
             return new RuleFilters(_types.ToList());
         }
+        public ILayer And(ILayer layer)
+        {
+            var teste = _types.ToList();
+            teste.AddRange(layer.GetTypes());
+            return new Layer(teste);
+            
+        }
 
         public IRestrictions Must()
         {

@@ -9,6 +9,7 @@ namespace FluentArch.Layers
         string GetName();
         ILayer As(string name);
         IFilters And();
+        ILayer And(ILayer layer);
         IRestrictions Must();
         IRestrictions CanOnly();
         IRestrictions Cannot();

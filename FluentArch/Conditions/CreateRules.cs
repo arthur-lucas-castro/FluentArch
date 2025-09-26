@@ -22,7 +22,7 @@ namespace FluentArch.Conditions
             {
                 var todasCriacoes = type.Functions.SelectMany(f => f.Creations);
 
-                var criacoesQueViolamRegra = todasCriacoes.Where(criacao => criacao.CompareClassAndNamespace(todasEntityDto));
+                var criacoesQueViolamRegra = todasCriacoes.Where(criacao => criacao.CompareClassAndNamespace(todasEntityDto) && !criacao.Namespace.Contains("System"));
                 if (!criacoesQueViolamRegra.Any())
                 {
                     continue;

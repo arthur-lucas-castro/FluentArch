@@ -51,7 +51,7 @@ namespace FluentArch.Conditions
             {
                 var todosLancamentos = type.Functions.SelectMany(f => f.Throws);
 
-                var lancamentosQueViolamRegra = todosLancamentos.Where(lancamento => !lancamento.CompareClassAndNamespace(todasEntityDto));
+                var lancamentosQueViolamRegra = todosLancamentos.Where(lancamento => !lancamento.CompareClassAndNamespace(todasEntityDto) && !lancamento.Namespace.Contains("System"));
                 if (!lancamentosQueViolamRegra.Any())
                 {
                     continue;
